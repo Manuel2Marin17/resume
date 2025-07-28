@@ -94,6 +94,60 @@ class TetrisGame {
                     break;
             }
         });
+        
+        // Touch controls
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+        
+        this.canvas.addEventListener('touchstart', (e) => {
+            if (!this.gameRunning) return;
+            e.preventDefault();
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        });
+        
+        this.canvas.addEventListener('touchmove', (e) => {
+            if (!this.gameRunning) return;
+            e.preventDefault();
+            touchEndX = e.touches[0].clientX;
+            touchEndY = e.touches[0].clientY;
+        });
+        
+        this.canvas.addEventListener('touchend', (e) => {
+            if (!this.gameRunning) return;
+            e.preventDefault();
+            
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            const minSwipeDistance = 30;
+            
+            // Detect tap (no significant movement)
+            if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+                this.rotatePiece();
+                return;
+            }
+            
+            // Horizontal swipe
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (Math.abs(deltaX) > minSwipeDistance) {
+                    if (deltaX > 0) {
+                        this.movePiece(1, 0); // Swipe right
+                    } else {
+                        this.movePiece(-1, 0); // Swipe left
+                    }
+                }
+            }
+            // Vertical swipe
+            else {
+                if (deltaY > minSwipeDistance) {
+                    this.dropPiece(); // Swipe down
+                } else if (deltaY < -minSwipeDistance) {
+                    this.hardDrop(); // Swipe up for hard drop
+                }
+            }
+        });
     }
     
     createBoard() {

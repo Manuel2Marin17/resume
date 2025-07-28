@@ -2,7 +2,7 @@
 
 A modern, responsive portfolio website showcasing my professional experience, technical skills, and interactive game demos built with vanilla JavaScript, HTML, and CSS.
 
-🌐 **Live Demo**: [View Portfolio](https://your-username.github.io) *(Update with your GitHub Pages URL)*
+🌐 **Live Demo**: [View Portfolio](https://manuel2marin17.github.io/resume/) *(Update with your GitHub Pages URL)*
 
 ![Portfolio Preview](preview.png) *(Add a screenshot of your website)*
 

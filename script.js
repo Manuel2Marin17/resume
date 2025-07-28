@@ -130,19 +130,6 @@ style.textContent = `
         transform: translateY(0) !important;
     }
     
-    .nav-menu.active {
-        position: fixed;
-        right: 0;
-        top: 70px;
-        flex-direction: column;
-        background-color: var(--bg-primary);
-        width: 250px;
-        border-radius: 10px;
-        box-shadow: var(--shadow-lg);
-        padding: 2rem;
-        display: flex;
-    }
-    
     .hamburger.active span:nth-child(2) {
         opacity: 0;
     }
