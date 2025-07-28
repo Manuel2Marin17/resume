@@ -124,7 +124,7 @@ portfolio-website/
 Manuel Marin
 - Email: m2marin91@gmail.com
 - Phone: 512-514-4525
-- LinkedIn: [Manuel Marin](https://linkedin.com/in/manuel-marin)
+- LinkedIn: [Manuel Marin](https://www.linkedin.com/in/manuel-marin-b45aa8181/)
 
 ## 📄 License
 
