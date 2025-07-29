@@ -309,6 +309,88 @@ const interviewData = {
             question: "Why are you looking for new opportunities?",
             answer: "After establishing myself as Software Architect and completing Master's in AI, I'm ready for new challenges combining enterprise development with AI/ML expertise. Seeking roles where I can build intelligent systems at scale and make larger impact."
         }
+    ],
+    sql: [
+        {
+            question: "What is the difference between WHERE and HAVING clauses?",
+            answer: "WHERE filters rows before grouping, works with individual rows. HAVING filters after GROUP BY, works with aggregated data. Example: WHERE salary > 50000 filters employees, HAVING AVG(salary) > 50000 filters departments."
+        },
+        {
+            question: "Explain the different types of JOINs in SQL.",
+            answer: "INNER JOIN: Returns matching rows from both tables. LEFT JOIN: All rows from left table, matching from right. RIGHT JOIN: All rows from right table. FULL OUTER JOIN: All rows from both tables. CROSS JOIN: Cartesian product of both tables."
+        },
+        {
+            question: "What are indexes and when should you use them?",
+            answer: "Indexes are data structures that improve query performance by providing quick lookups. Use on: Primary/foreign keys, columns in WHERE/JOIN/ORDER BY clauses. Avoid on: Small tables, frequently updated columns, columns with low selectivity. Trade-off: Faster reads, slower writes."
+        },
+        {
+            question: "Explain ACID properties in database transactions.",
+            answer: "Atomicity: All or nothing execution. Consistency: Data integrity maintained. Isolation: Concurrent transactions don't interfere. Durability: Committed changes persist. Essential for reliable database operations, especially in financial systems."
+        },
+        {
+            question: "What's the difference between DELETE, TRUNCATE, and DROP?",
+            answer: "DELETE: Removes rows with WHERE clause, logged, can rollback, triggers fire. TRUNCATE: Removes all rows, minimal logging, faster, resets identity, cannot rollback. DROP: Removes entire table structure and data permanently."
+        },
+        {
+            question: "How do you optimize a slow-running query?",
+            answer: "1) Analyze execution plan 2) Add appropriate indexes 3) Rewrite query logic 4) Update statistics 5) Avoid SELECT * 6) Use EXISTS instead of IN for subqueries 7) Partition large tables 8) Consider denormalization for read-heavy workloads."
+        },
+        {
+            question: "Explain window functions and provide examples.",
+            answer: "Window functions perform calculations across rows related to current row. ROW_NUMBER(): Sequential numbering. RANK(): Same rank for ties. DENSE_RANK(): No gaps in ranking. LAG/LEAD: Access previous/next rows. Running totals with SUM() OVER()."
+        },
+        {
+            question: "What are CTEs and how do they differ from subqueries?",
+            answer: "Common Table Expressions (WITH clause) create named temporary result sets. Benefits over subqueries: Better readability, reusable in same query, support recursion, easier to debug. Subqueries can be correlated, CTEs cannot reference outer query."
+        },
+        {
+            question: "Explain normalization and denormalization.",
+            answer: "Normalization: Organizing data to reduce redundancy. 1NF: Atomic values. 2NF: No partial dependencies. 3NF: No transitive dependencies. Denormalization: Strategic redundancy for performance. Use normalization for OLTP, consider denormalization for OLAP/reporting."
+        },
+        {
+            question: "How do you handle NULL values in SQL?",
+            answer: "NULL represents unknown/missing data. Use IS NULL/IS NOT NULL for comparisons. COALESCE() returns first non-null value. NULLIF() returns NULL if values equal. Consider ISNULL() in SQL Server. NULLs affect aggregations, joins, and comparisons."
+        },
+        {
+            question: "What's the difference between UNION and UNION ALL?",
+            answer: "UNION: Combines result sets, removes duplicates, slower due to distinct operation. UNION ALL: Keeps all rows including duplicates, faster performance. Both require same number of columns with compatible data types. Use UNION ALL when duplicates are acceptable."
+        },
+        {
+            question: "Explain database isolation levels.",
+            answer: "READ UNCOMMITTED: Dirty reads possible. READ COMMITTED: Prevents dirty reads. REPEATABLE READ: Prevents dirty and non-repeatable reads. SERIALIZABLE: Highest isolation, prevents all phenomena. Trade-off between consistency and concurrency."
+        },
+        {
+            question: "How do you implement pagination in SQL?",
+            answer: "LIMIT/OFFSET: Simple but slow for large offsets. Keyset pagination: WHERE id > last_id more efficient. Row_Number() with CTE for complex sorting. Consider total count needs, index usage, and consistent ordering."
+        },
+        {
+            question: "What are stored procedures and their advantages?",
+            answer: "Precompiled SQL code stored in database. Advantages: Better performance, reduced network traffic, code reusability, enhanced security through parameterization, centralized business logic. Disadvantages: Database vendor lock-in, harder version control."
+        },
+        {
+            question: "Explain the difference between clustered and non-clustered indexes.",
+            answer: "Clustered: One per table, defines physical order of data, contains actual data. Non-clustered: Multiple allowed, separate structure with pointers to data, contains only indexed columns and row locators. Choose clustered for primary key or most queried column."
+        },
+        {
+            question: "How do you handle hierarchical data in SQL?",
+            answer: "Adjacency list: parent_id column, simple but recursive queries needed. Path enumeration: store full path. Nested sets: left/right values for tree traversal. Closure table: separate table for all paths. Modern: Use recursive CTEs or hierarchyid (SQL Server)."
+        },
+        {
+            question: "What are Oracle-specific features you've used?",
+            answer: "PL/SQL for procedural code. Sequences for auto-increment. MERGE for upsert operations. Materialized views for performance. Partitioning for large tables. Flashback for point-in-time recovery. Oracle Text for full-text search. AWR for performance tuning."
+        },
+        {
+            question: "Explain Oracle's ROWNUM vs ROW_NUMBER().",
+            answer: "ROWNUM: Assigned during fetch, before ORDER BY, used in WHERE clause for top-N queries. ROW_NUMBER(): Analytic function, works with ORDER BY in OVER clause, more flexible for pagination and ranking. ROW_NUMBER() preferred for complex requirements."
+        },
+        {
+            question: "How do you tune Oracle database performance?",
+            answer: "Use AWR/ADDM reports for analysis. Analyze execution plans with EXPLAIN PLAN. Gather statistics with DBMS_STATS. Use hints sparingly. Implement partitioning for large tables. Configure SGA/PGA properly. Use bind variables to reduce parsing."
+        },
+        {
+            question: "What's the difference between VARCHAR and VARCHAR2 in Oracle?",
+            answer: "VARCHAR2: Oracle-specific, recommended, max 4000 bytes in SQL, 32767 in PL/SQL. VARCHAR: Reserved for future use, currently synonymous with VARCHAR2. Always use VARCHAR2 in Oracle. Consider CLOB for larger text data."
+        }
     ]
 };
 
