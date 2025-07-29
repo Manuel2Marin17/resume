@@ -216,20 +216,23 @@
                     <h3><i class="fas fa-code"></i> Languages</h3>
                     <div class="skill-tags">
                         <span class="skill-tag">C#</span>
+                        <span class="skill-tag">TypeScript</span>
                         <span class="skill-tag">Python</span>
                         <span class="skill-tag">JavaScript</span>
-                        <span class="skill-tag">TypeScript</span>
-                        <span class="skill-tag">Prolog</span>
-                        <span class="skill-tag">YAML</span>
+                        <span class="skill-tag">SQL</span>
+                        <span class="skill-tag">HTML/CSS</span>
                     </div>
                 </div>
 
                 <div class="skill-category">
                     <h3><i class="fas fa-layer-group"></i> Frameworks</h3>
                     <div class="skill-tags">
-                        <span class="skill-tag">.NET Core</span>
-                        <span class="skill-tag">ASP.NET MVC</span>
-                        <span class="skill-tag">Angular 15-19</span>
+                        <span class="skill-tag">.NET 8</span>
+                        <span class="skill-tag">ASP.NET Core</span>
+                        <span class="skill-tag">Angular 19</span>
+                        <span class="skill-tag">React</span>
+                        <span class="skill-tag">Node.js</span>
+                        <span class="skill-tag">SignalR</span>
                     </div>
                 </div>
 
@@ -258,7 +261,31 @@
                 </div>
 
                 <div class="skill-category">
-                    <h3><i class="fas fa-chart-bar"></i> Data Tools</h3>
+                    <h3><i class="fas fa-database"></i> Data & State Management</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Oracle</span>
+                        <span class="skill-tag">SQL Server</span>
+                        <span class="skill-tag">Dapper</span>
+                        <span class="skill-tag">Entity Framework Core</span>
+                        <span class="skill-tag">NgRx</span>
+                        <span class="skill-tag">RxJS</span>
+                    </div>
+                </div>
+
+                <div class="skill-category">
+                    <h3><i class="fas fa-paint-brush"></i> UI/UX Libraries</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Angular Material</span>
+                        <span class="skill-tag">AG-Grid Enterprise</span>
+                        <span class="skill-tag">PrimeNG</span>
+                        <span class="skill-tag">Bootstrap</span>
+                        <span class="skill-tag">Highcharts</span>
+                        <span class="skill-tag">Material Design</span>
+                    </div>
+                </div>
+
+                <div class="skill-category">
+                    <h3><i class="fas fa-chart-bar"></i> Data Science</h3>
                     <div class="skill-tags">
                         <span class="skill-tag">pandas</span>
                         <span class="skill-tag">NumPy</span>
@@ -271,12 +298,24 @@
                 <div class="skill-category">
                     <h3><i class="fas fa-tools"></i> DevOps & Tools</h3>
                     <div class="skill-tags">
+                        <span class="skill-tag">Docker</span>
                         <span class="skill-tag">Git</span>
-                        <span class="skill-tag">GitHub</span>
-                        <span class="skill-tag">PowerShell</span>
+                        <span class="skill-tag">Nx Monorepo</span>
+                        <span class="skill-tag">Webpack</span>
                         <span class="skill-tag">IIS</span>
-                        <span class="skill-tag">TeamCity</span>
+                        <span class="skill-tag">Azure DevOps</span>
+                    </div>
+                </div>
+
+                <div class="skill-category">
+                    <h3><i class="fas fa-vial"></i> Testing</h3>
+                    <div class="skill-tags">
                         <span class="skill-tag">Cypress</span>
+                        <span class="skill-tag">Jest</span>
+                        <span class="skill-tag">Playwright</span>
+                        <span class="skill-tag">NUnit</span>
+                        <span class="skill-tag">Jasmine/Karma</span>
+                        <span class="skill-tag">Moq</span>
                     </div>
                 </div>
             </div>
@@ -321,35 +360,13 @@
     </section>
 
     <!-- Projects Section -->
-    <section id="projects" class="projects">
+    <section id="projects" class="masters-projects">
         <div class="container">
-            <h2 class="section-title">AI/ML Projects</h2>
-            <p class="section-subtitle">Graduate coursework projects focusing on machine learning, deep learning, and reinforcement learning</p>
+            <h2 class="section-title">Projects</h2>
+            <p class="section-subtitle">In-depth AI/ML projects from my Master's in Computer Science with AI concentration at Dakota State University</p>
             
-            <div class="projects-grid">
-                <div class="project-card">
-                    <div class="project-icon">
-                        <i class="fas fa-credit-card"></i>
-                    </div>
-                    <h3>Credit Card Fraud Detection</h3>
-                    <p>Built ML model to detect fraudulent transactions using time-based features and ensemble methods</p>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-icon">
-                        <i class="fas fa-gamepad"></i>
-                    </div>
-                    <h3>Reinforcement Learning Agents</h3>
-                    <p>Developed and trained RL agents using PPO, DQN, and A2C to solve control tasks in OpenAI Gym</p>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-icon">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <h3>LLM Fine-Tuning with LoRA</h3>
-                    <p>Fine-tuned LLaMA-based model using LoRA for instruction-following tasks, deployed with Ollama</p>
-                </div>
+            <div id="masters-projects-container" class="masters-projects-grid">
+                <!-- Projects will be dynamically loaded here -->
             </div>
         </div>
     </section>
@@ -470,6 +487,7 @@
     </footer>
 
     <script src="script.js"></script>
+    <script src="masters-projects.js"></script>
     <script src="flappy-game.js"></script>
     <script src="soccer-game.js"></script>
     <script src="tetris-game.js"></script>

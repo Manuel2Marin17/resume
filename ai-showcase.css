@@ -1,0 +1,289 @@
+/* AI Showcase Styles */
+
+.ai-showcase {
+    padding: 80px 0;
+    background: var(--bg-secondary);
+}
+
+.demo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.demo-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.demo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+}
+
+.demo-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.demo-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--primary-color);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+}
+
+.demo-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.demo-description {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* Fraud Detection Demo */
+.fraud-controls {
+    display: grid;
+    gap: 1rem;
+}
+
+.control-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.control-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.fraud-input {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: border-color 0.3s ease;
+}
+
+.fraud-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    height: 6px;
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.fraud-visualization {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.gauge-container {
+    position: relative;
+    width: 200px;
+    height: 100px;
+    margin: 0 auto 1rem;
+    overflow: hidden;
+}
+
+.gauge-background {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: conic-gradient(
+        from 180deg,
+        #10b981 0deg,
+        #f59e0b 120deg,
+        #ef4444 180deg
+    );
+}
+
+.gauge-mask {
+    position: absolute;
+    top: 100px;
+    width: 200px;
+    height: 100px;
+    background: var(--card-bg);
+}
+
+#fraudGauge {
+    position: absolute;
+    width: 4px;
+    height: 100px;
+    background: #1e293b;
+    left: 98px;
+    transform-origin: bottom;
+    transition: transform 0.5s ease;
+}
+
+.fraud-result {
+    margin-top: 1rem;
+}
+
+#fraudPercent {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+#riskLevel {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+}
+
+/* Chatbot Demo */
+.chat-container {
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+#chatMessages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    background: var(--bg-primary);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.chat-message {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-message.user {
+    align-items: flex-end;
+}
+
+.chat-message.bot {
+    align-items: flex-start;
+}
+
+.message-content {
+    max-width: 80%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    line-height: 1.5;
+}
+
+.chat-message.user .message-content {
+    background: var(--primary-color);
+    color: white;
+}
+
+.chat-message.bot .message-content {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.message-time {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin-top: 0.25rem;
+}
+
+.chat-input-container {
+    display: flex;
+    gap: 0.75rem;
+}
+
+#chatInput {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+#chatInput:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+#chatSend {
+    padding: 0.75rem 1.5rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#chatSend:hover {
+    background: var(--primary-hover);
+}
+
+/* RL Visualization */
+.rl-container {
+    text-align: center;
+}
+
+#rlCanvas {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    background: var(--bg-primary);
+}
+
+#rlToggle {
+    margin-top: 1rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .demo-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .control-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .gauge-container {
+        transform: scale(0.8);
+    }
+    
+    #rlCanvas {
+        width: 100%;
+        height: auto;
+    }
+}
