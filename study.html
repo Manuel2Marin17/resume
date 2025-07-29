@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Prep - Manuel Marin</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="study-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">MM</div>
+            <ul class="nav-menu">
+                <li><a href="index.html#home" class="nav-link">Home</a></li>
+                <li><a href="index.html#professional" class="nav-link">Professional</a></li>
+                <li><a href="index.html#experience" class="nav-link">Experience</a></li>
+                <li><a href="index.html#skills" class="nav-link">Skills</a></li>
+                <li><a href="index.html#education" class="nav-link">Education</a></li>
+                <li><a href="index.html#projects" class="nav-link">Projects</a></li>
+                <li><a href="index.html#games" class="nav-link">Games</a></li>
+                <li><a href="#study" class="nav-link active">Study</a></li>
+                <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Study Hero Section -->
+    <section class="study-hero">
+        <div class="container">
+            <h1 class="study-title">Interview Preparation Hub</h1>
+            <p class="study-subtitle">Master technical concepts, practice with flashcards, and test your knowledge</p>
+            <div class="study-stats">
+                <div class="stat-card">
+                    <h3>200+</h3>
+                    <p>Interview Questions</p>
+                </div>
+                <div class="stat-card">
+                    <h3>5</h3>
+                    <p>Tech Categories</p>
+                </div>
+                <div class="stat-card">
+                    <h3>50+</h3>
+                    <p>Behavioral Scenarios</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Study Mode Selection -->
+    <section class="study-modes">
+        <div class="container">
+            <div class="mode-grid">
+                <div class="mode-card" data-mode="flashcards">
+                    <i class="fas fa-layer-group"></i>
+                    <h3>Flashcards</h3>
+                    <p>Quick review with interactive cards</p>
+                    <button class="btn btn-primary">Start Flashcards</button>
+                </div>
+                <div class="mode-card" data-mode="quiz">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Quiz Mode</h3>
+                    <p>Test your knowledge with multiple choice</p>
+                    <button class="btn btn-primary">Start Quiz</button>
+                </div>
+                <div class="mode-card" data-mode="reference">
+                    <i class="fas fa-book"></i>
+                    <h3>Quick Reference</h3>
+                    <p>Browse all questions and answers</p>
+                    <button class="btn btn-primary">View Reference</button>
+                </div>
+                <div class="mode-card" data-mode="coding">
+                    <i class="fas fa-code"></i>
+                    <h3>Coding Challenges</h3>
+                    <p>Test your coding knowledge</p>
+                    <button class="btn btn-primary">Start Coding</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Flashcards Section -->
+    <section id="flashcards-section" class="flashcards-section hidden">
+        <div class="container">
+            <div class="flashcard-controls">
+                <button class="btn btn-secondary" id="back-to-modes-flash"><i class="fas fa-arrow-left"></i> Back</button>
+                <div class="category-selector">
+                    <label>Category:</label>
+                    <select id="flashcard-category">
+                        <option value="all">All Categories</option>
+                        <option value="dotnet">.NET/C#</option>
+                        <option value="angular">Angular</option>
+                        <option value="aiml">AI/ML</option>
+                        <option value="system">System Design</option>
+                        <option value="behavioral">Behavioral</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" id="shuffle-cards"><i class="fas fa-random"></i> Shuffle</button>
+            </div>
+
+            <div class="flashcard-container">
+                <div class="flashcard" id="flashcard">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <p class="card-category"></p>
+                            <h3 class="card-question"></h3>
+                            <p class="flip-hint">Click to reveal answer</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <p class="card-category"></p>
+                            <div class="card-answer"></div>
+                            <p class="flip-hint">Click to see question</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flashcard-navigation">
+                <button class="btn btn-secondary" id="prev-card" disabled><i class="fas fa-chevron-left"></i> Previous</button>
+                <span class="card-counter"><span id="current-card">1</span> / <span id="total-cards">0</span></span>
+                <button class="btn btn-secondary" id="next-card">Next <i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quiz Section -->
+    <section id="quiz-section" class="quiz-section hidden">
+        <div class="container">
+            <div class="quiz-header">
+                <button class="btn btn-secondary" id="back-to-modes-quiz"><i class="fas fa-arrow-left"></i> Back</button>
+                <h2>Interview Quiz</h2>
+                <div class="quiz-score">
+                    Score: <span id="quiz-score">0</span> / <span id="quiz-total">0</span>
+                </div>
+            </div>
+
+            <div class="quiz-setup" id="quiz-setup">
+                <h3>Configure Your Quiz</h3>
+                <div class="quiz-options">
+                    <div class="option-group">
+                        <label>Number of Questions:</label>
+                        <select id="quiz-length">
+                            <option value="10">10 Questions</option>
+                            <option value="20">20 Questions</option>
+                            <option value="30">30 Questions</option>
+                            <option value="50">50 Questions</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label>Category:</label>
+                        <select id="quiz-category">
+                            <option value="all">All Categories</option>
+                            <option value="dotnet">.NET/C#</option>
+                            <option value="angular">Angular</option>
+                            <option value="aiml">AI/ML</option>
+                            <option value="system">System Design</option>
+                            <option value="behavioral">Behavioral</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="start-quiz">Start Quiz</button>
+            </div>
+
+            <div class="quiz-content hidden" id="quiz-content">
+                <div class="question-progress">
+                    Question <span id="current-question">1</span> of <span id="total-questions">10</span>
+                </div>
+                
+                <div class="question-card">
+                    <p class="question-category"></p>
+                    <h3 class="question-text"></h3>
+                    <div class="answer-options" id="answer-options">
+                        <!-- Options will be dynamically added -->
+                    </div>
+                </div>
+
+                <div class="quiz-actions">
+                    <button class="btn btn-primary" id="submit-answer" disabled>Submit Answer</button>
+                    <button class="btn btn-secondary hidden" id="next-question">Next Question</button>
+                </div>
+            </div>
+
+            <div class="quiz-results hidden" id="quiz-results">
+                <h2>Quiz Complete!</h2>
+                <div class="results-stats">
+                    <div class="result-card">
+                        <h3 id="final-score">0%</h3>
+                        <p>Final Score</p>
+                    </div>
+                    <div class="result-card">
+                        <h3 id="correct-answers">0</h3>
+                        <p>Correct Answers</p>
+                    </div>
+                    <div class="result-card">
+                        <h3 id="time-taken">0:00</h3>
+                        <p>Time Taken</p>
+                    </div>
+                </div>
+                <div class="results-breakdown" id="results-breakdown">
+                    <!-- Results will be shown here -->
+                </div>
+                <button class="btn btn-primary" id="restart-quiz">Try Another Quiz</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coding Challenges Section -->
+    <section id="coding-section" class="coding-section hidden">
+        <div class="container">
+            <div class="coding-header">
+                <button class="btn btn-secondary" id="back-to-modes-coding"><i class="fas fa-arrow-left"></i> Back</button>
+                <h2>Coding Challenges</h2>
+                <div class="coding-score">
+                    Score: <span id="coding-score">0</span> / <span id="coding-total">0</span>
+                </div>
+            </div>
+
+            <div class="coding-content" id="coding-content">
+                <div class="challenge-progress">
+                    Challenge <span id="current-challenge">1</span> of <span id="total-challenges">10</span>
+                </div>
+                
+                <div class="challenge-card">
+                    <div class="challenge-header">
+                        <span class="challenge-category"></span>
+                        <span class="challenge-difficulty"></span>
+                    </div>
+                    <h3 class="challenge-title"></h3>
+                    <div class="challenge-description"></div>
+                    <pre class="challenge-code"><code></code></pre>
+                    <div class="challenge-question"></div>
+                    <div class="challenge-options" id="challenge-options">
+                        <!-- Options will be dynamically added -->
+                    </div>
+                </div>
+
+                <div class="coding-actions">
+                    <button class="btn btn-primary" id="submit-code-answer" disabled>Submit Answer</button>
+                    <button class="btn btn-secondary hidden" id="next-challenge">Next Challenge</button>
+                </div>
+            </div>
+
+            <div class="coding-complete hidden" id="coding-complete">
+                <h2>Challenges Complete!</h2>
+                <div class="coding-results">
+                    <div class="result-card">
+                        <h3 id="final-coding-score">0%</h3>
+                        <p>Final Score</p>
+                    </div>
+                    <div class="result-card">
+                        <h3 id="correct-coding-answers">0</h3>
+                        <p>Correct Answers</p>
+                    </div>
+                </div>
+                <div class="coding-review" id="coding-review">
+                    <!-- Review will be shown here -->
+                </div>
+                <button class="btn btn-primary" id="restart-coding">Try More Challenges</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reference Section -->
+    <section id="reference-section" class="reference-section hidden">
+        <div class="container">
+            <div class="reference-header">
+                <button class="btn btn-secondary" id="back-to-modes-ref"><i class="fas fa-arrow-left"></i> Back</button>
+                <h2>Quick Reference Guide</h2>
+                <input type="text" id="search-reference" placeholder="Search questions..." class="search-input">
+            </div>
+
+            <div class="reference-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="dotnet">.NET/C#</button>
+                <button class="filter-btn" data-filter="angular">Angular</button>
+                <button class="filter-btn" data-filter="aiml">AI/ML</button>
+                <button class="filter-btn" data-filter="system">System Design</button>
+                <button class="filter-btn" data-filter="behavioral">Behavioral</button>
+            </div>
+
+            <div class="reference-content" id="reference-content">
+                <!-- Questions will be dynamically loaded -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Manuel Marin. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="study-data.js"></script>
+    <script src="coding-challenges-data.js"></script>
+    <script src="study-init.js"></script>
+    <script src="study-app.js"></script>
+</body>
+</html>

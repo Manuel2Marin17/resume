@@ -983,6 +983,33 @@ section {
     padding: 2rem;
     color: var(--text-secondary);
     border-top: 1px solid var(--border-color);
+    position: relative;
+}
+
+/* Hidden Study Access Icon */
+.study-secret-icon {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    opacity: 0.3;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    text-decoration: none;
+}
+
+.study-secret-icon:hover {
+    opacity: 0.6;
+    transform: translateY(-2px);
+}
+
+/* Dark mode specific styling for study icon */
+[data-theme="dark"] .study-secret-icon {
+    opacity: 0.2;
+}
+
+[data-theme="dark"] .study-secret-icon:hover {
+    opacity: 0.5;
 }
 
 /* Animations */
