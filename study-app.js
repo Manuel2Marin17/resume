@@ -52,6 +52,12 @@ document.addEventListener('DOMContentLoaded', function() {
     let codingScore = 0;
     let selectedCodeAnswer = null;
 
+    // Code expansion modal elements
+    const codeModal = document.getElementById('code-modal');
+    const codeModalClose = document.querySelector('.code-modal-close');
+    const expandedCode = document.getElementById('expanded-code');
+    const copyCodeBtn = document.querySelector('.copy-code-btn');
+
     // Initialize
     initializeApp();
 
@@ -129,6 +135,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
                     flipCard();
                 }
+            }
+        });
+
+        // Code expansion modal event listeners
+        if (codeModalClose) {
+            codeModalClose.addEventListener('click', closeCodeModal);
+        }
+
+        if (copyCodeBtn) {
+            copyCodeBtn.addEventListener('click', copyExpandedCode);
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target === codeModal) {
+                closeCodeModal();
+            }
+        });
+
+        // ESC key to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && codeModal && codeModal.style.display === 'block') {
+                closeCodeModal();
             }
         });
     }
@@ -229,11 +258,26 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const codeContent = document.createElement('div');
             codeContent.className = 'code-content';
+            const codeBlockContainer = document.createElement('div');
+            codeBlockContainer.style.position = 'relative';
+            
             const codeBlock = document.createElement('pre');
             const code = document.createElement('code');
             code.textContent = card.code;
             codeBlock.appendChild(code);
-            codeContent.appendChild(codeBlock);
+            
+            // Add expand button inside the code content
+            const expandBtn = document.createElement('button');
+            expandBtn.className = 'code-expand-btn';
+            expandBtn.innerHTML = '<i class="fas fa-expand"></i> Expand';
+            expandBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                openCodeModal(card.code, card.question);
+            });
+            
+            codeBlockContainer.appendChild(expandBtn);
+            codeBlockContainer.appendChild(codeBlock);
+            codeContent.appendChild(codeBlockContainer);
             
             codeSection.appendChild(codeToggle);
             codeSection.appendChild(codeContent);
@@ -597,7 +641,25 @@ document.addEventListener('DOMContentLoaded', function() {
         card.querySelector('.challenge-difficulty').setAttribute('data-level', challenge.difficulty);
         card.querySelector('.challenge-title').textContent = challenge.title;
         card.querySelector('.challenge-description').textContent = challenge.description;
-        card.querySelector('.challenge-code code').textContent = challenge.code;
+        
+        // Add code with expand button
+        const codeContainer = card.querySelector('.challenge-code');
+        codeContainer.innerHTML = ''; // Clear existing content
+        
+        const codeElement = document.createElement('code');
+        codeElement.textContent = challenge.code;
+        codeContainer.appendChild(codeElement);
+        
+        // Add expand button to coding challenges
+        const expandBtn = document.createElement('button');
+        expandBtn.className = 'code-expand-btn';
+        expandBtn.innerHTML = '<i class="fas fa-expand"></i> Expand';
+        expandBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            openCodeModal(challenge.code, `${challenge.title} - ${challenge.category}`);
+        });
+        codeContainer.appendChild(expandBtn);
+        
         card.querySelector('.challenge-question').textContent = challenge.question;
         
         const optionsContainer = document.getElementById('challenge-options');
@@ -710,5 +772,66 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             reviewContainer.appendChild(reviewItem);
         });
+    }
+
+    // Code expansion modal functions
+    function openCodeModal(code, title = 'Code Example') {
+        if (!codeModal || !expandedCode) return;
+        
+        // Set the title
+        const modalTitle = codeModal.querySelector('.code-modal-title');
+        if (modalTitle) {
+            modalTitle.textContent = title;
+        }
+        
+        // Set the code content
+        expandedCode.textContent = code;
+        
+        // Show the modal
+        codeModal.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+    }
+
+    function closeCodeModal() {
+        if (!codeModal) return;
+        
+        codeModal.style.display = 'none';
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+
+    function copyExpandedCode() {
+        if (!expandedCode) return;
+        
+        const codeText = expandedCode.textContent;
+        
+        // Create a temporary textarea element
+        const textarea = document.createElement('textarea');
+        textarea.value = codeText;
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        document.body.appendChild(textarea);
+        
+        // Select and copy the text
+        textarea.select();
+        textarea.setSelectionRange(0, 99999); // For mobile devices
+        
+        try {
+            document.execCommand('copy');
+            
+            // Show feedback
+            const originalText = copyCodeBtn.innerHTML;
+            copyCodeBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            copyCodeBtn.classList.add('btn-success');
+            
+            setTimeout(() => {
+                copyCodeBtn.innerHTML = originalText;
+                copyCodeBtn.classList.remove('btn-success');
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy code:', err);
+        }
+        
+        // Clean up
+        document.body.removeChild(textarea);
     }
 });
