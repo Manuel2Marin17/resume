@@ -58,6 +58,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const expandedCode = document.getElementById('expanded-code');
     const copyCodeBtn = document.querySelector('.copy-code-btn');
 
+    // Practice mode elements
+    const practiceOverlay = document.getElementById('practice-overlay');
+    const practiceClose = document.querySelector('.practice-close');
+    const practiceOptionsContainer = document.getElementById('practice-options');
+    const practiceFeedback = document.getElementById('practice-feedback');
+    const practiceContinueBtn = document.getElementById('practice-continue');
+    let currentPracticeCard = null;
+    let selectedPracticeAnswer = null;
+
     // Initialize
     initializeApp();
 
@@ -160,6 +169,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeCodeModal();
             }
         });
+
+        // Practice mode event listeners
+        if (practiceClose) {
+            practiceClose.addEventListener('click', closePracticeMode);
+        }
+
+        if (practiceContinueBtn) {
+            practiceContinueBtn.addEventListener('click', closePracticeMode);
+        }
+
+        // Close practice overlay when clicking outside
+        if (practiceOverlay) {
+            practiceOverlay.addEventListener('click', function(e) {
+                if (e.target === practiceOverlay) {
+                    closePracticeMode();
+                }
+            });
+        }
     }
 
     function showMode(mode) {
@@ -240,47 +267,30 @@ document.addEventListener('DOMContentLoaded', function() {
         answerText.textContent = card.answer;
         answerDiv.appendChild(answerText);
         
+        // Add practice button
+        const practiceBtn = document.createElement('button');
+        practiceBtn.className = 'practice-btn';
+        practiceBtn.innerHTML = '<i class="fas fa-brain"></i> Practice This Question';
+        practiceBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            showPracticeMode(card, index);
+        });
+        answerDiv.appendChild(practiceBtn);
+        
         // Add code example if available
         if (card.code) {
             const codeSection = document.createElement('div');
             codeSection.className = 'code-section';
             
-            const codeToggle = document.createElement('button');
-            codeToggle.className = 'code-toggle';
-            codeToggle.innerHTML = '<i class="fas fa-code"></i> View Code Example';
-            codeToggle.addEventListener('click', function(e) {
+            const codeButton = document.createElement('button');
+            codeButton.className = 'code-toggle';
+            codeButton.innerHTML = '<i class="fas fa-code"></i> View Code Example';
+            codeButton.addEventListener('click', function(e) {
                 e.stopPropagation(); // Prevent card flip
-                codeContent.classList.toggle('expanded');
-                codeToggle.innerHTML = codeContent.classList.contains('expanded') 
-                    ? '<i class="fas fa-code"></i> Hide Code Example' 
-                    : '<i class="fas fa-code"></i> View Code Example';
-            });
-            
-            const codeContent = document.createElement('div');
-            codeContent.className = 'code-content';
-            const codeBlockContainer = document.createElement('div');
-            codeBlockContainer.style.position = 'relative';
-            
-            const codeBlock = document.createElement('pre');
-            const code = document.createElement('code');
-            code.textContent = card.code;
-            codeBlock.appendChild(code);
-            
-            // Add expand button inside the code content
-            const expandBtn = document.createElement('button');
-            expandBtn.className = 'code-expand-btn';
-            expandBtn.innerHTML = '<i class="fas fa-expand"></i> Expand';
-            expandBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
                 openCodeModal(card.code, card.question);
             });
             
-            codeBlockContainer.appendChild(expandBtn);
-            codeBlockContainer.appendChild(codeBlock);
-            codeContent.appendChild(codeBlockContainer);
-            
-            codeSection.appendChild(codeToggle);
-            codeSection.appendChild(codeContent);
+            codeSection.appendChild(codeButton);
             answerDiv.appendChild(codeSection);
         }
 
@@ -588,6 +598,8 @@ document.addEventListener('DOMContentLoaded', function() {
             dotnet: '.NET/C#',
             angular: 'Angular',
             aiml: 'AI/ML',
+            python: 'Python',
+            sql: 'SQL/Oracle',
             system: 'System Design',
             behavioral: 'Behavioral'
         };
@@ -833,5 +845,102 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Clean up
         document.body.removeChild(textarea);
+    }
+
+    // Practice Mode Functions
+    function showPracticeMode(card, cardIndex) {
+        currentPracticeCard = card;
+        selectedPracticeAnswer = null;
+        
+        // Show overlay
+        practiceOverlay.classList.remove('hidden');
+        
+        // Set question
+        const questionText = practiceOverlay.querySelector('.practice-question-text');
+        questionText.textContent = card.question;
+        
+        // Generate wrong answers
+        const allCards = currentFlashcards.filter((c, i) => i !== cardIndex && c.category === card.category);
+        const wrongAnswers = [];
+        
+        // Get 3 wrong answers from same category
+        const shuffled = allCards.sort(() => Math.random() - 0.5);
+        for (let i = 0; i < Math.min(3, shuffled.length); i++) {
+            wrongAnswers.push(shuffled[i].answer);
+        }
+        
+        // If not enough from same category, get from other categories
+        if (wrongAnswers.length < 3) {
+            const otherCards = currentFlashcards.filter((c, i) => 
+                i !== cardIndex && 
+                c.category !== card.category &&
+                !wrongAnswers.includes(c.answer)
+            ).sort(() => Math.random() - 0.5);
+            
+            const needed = 3 - wrongAnswers.length;
+            for (let i = 0; i < Math.min(needed, otherCards.length); i++) {
+                wrongAnswers.push(otherCards[i].answer);
+            }
+        }
+        
+        // Create options array with correct answer
+        const options = [card.answer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+        
+        // Clear previous options
+        practiceOptionsContainer.innerHTML = '';
+        practiceFeedback.classList.add('hidden');
+        
+        // Create option elements
+        options.forEach((option, index) => {
+            const optionEl = document.createElement('div');
+            optionEl.className = 'practice-option';
+            optionEl.textContent = option;
+            optionEl.dataset.index = index;
+            optionEl.dataset.answer = option;
+            
+            optionEl.addEventListener('click', function() {
+                selectPracticeAnswer(this, option === card.answer);
+            });
+            
+            practiceOptionsContainer.appendChild(optionEl);
+        });
+    }
+
+    function selectPracticeAnswer(element, isCorrect) {
+        if (selectedPracticeAnswer !== null) return; // Already answered
+        
+        selectedPracticeAnswer = element.dataset.answer;
+        
+        // Mark selected
+        element.classList.add('selected');
+        element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        
+        // Show correct answer if wrong
+        if (!isCorrect) {
+            const options = practiceOptionsContainer.querySelectorAll('.practice-option');
+            options.forEach(opt => {
+                if (opt.dataset.answer === currentPracticeCard.answer) {
+                    opt.classList.add('correct');
+                }
+            });
+        }
+        
+        // Show feedback
+        const feedbackText = practiceFeedback.querySelector('.feedback-text');
+        if (isCorrect) {
+            feedbackText.textContent = '🎉 Correct! Great job!';
+            feedbackText.className = 'feedback-text correct';
+        } else {
+            feedbackText.textContent = '❌ Not quite. The correct answer is highlighted above.';
+            feedbackText.className = 'feedback-text incorrect';
+        }
+        
+        practiceFeedback.classList.remove('hidden');
+    }
+
+    function closePracticeMode() {
+        practiceOverlay.classList.add('hidden');
+        currentPracticeCard = null;
+        selectedPracticeAnswer = null;
     }
 });

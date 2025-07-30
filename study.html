@@ -137,6 +137,26 @@
             <div class="progress-bar">
                 <div class="progress-fill" id="progress-fill"></div>
             </div>
+            
+            <!-- Practice Mode Overlay -->
+            <div id="practice-overlay" class="practice-overlay hidden">
+                <div class="practice-container">
+                    <div class="practice-header">
+                        <h3>Practice Mode</h3>
+                        <button class="practice-close">&times;</button>
+                    </div>
+                    <div class="practice-question">
+                        <p class="practice-question-text"></p>
+                    </div>
+                    <div class="practice-options" id="practice-options">
+                        <!-- Options will be dynamically added -->
+                    </div>
+                    <div class="practice-feedback hidden" id="practice-feedback">
+                        <p class="feedback-text"></p>
+                        <button class="btn btn-primary" id="practice-continue">Continue</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
