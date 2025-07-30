@@ -3,11 +3,11 @@ const interviewData = {
     dotnet: [
         {
             question: "Explain the differences between .NET Framework and .NET Core/.NET 8.",
-            answer: ".NET Framework is Windows-only and legacy, while .NET Core (now .NET 5+) is cross-platform, open-source, and has better performance. .NET 8 includes native AOT compilation, improved performance, and enhanced cloud-native features."
+            answer: ".NET Framework is Windows-only and legacy. .NET Core (now .NET 5+) is cross-platform, open-source, with better performance. .NET 8 adds native AOT compilation and cloud-native features."
         },
         {
             question: "What are the key principles of dependency injection in .NET Core?",
-            answer: "DI promotes loose coupling, testability, and follows SOLID principles. Services are registered in the DI container with different lifetimes: Singleton (one instance for app lifetime), Scoped (one instance per request), and Transient (new instance each time).",
+            answer: "DI promotes loose coupling and testability. Three lifetimes: Singleton (one instance for app), Scoped (one per request), Transient (new each time). Register services → Inject via constructor → Use in methods.",
             code: `// Program.cs - Registering services
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,7 +76,7 @@ public class NotificationManager
         },
         {
             question: "How do you handle asynchronous programming in C#?",
-            answer: "Using async/await pattern with Task-based programming. Key practices: Avoid async void (except event handlers), use ConfigureAwait(false) in libraries, proper exception handling with try-catch, understand synchronization contexts.",
+            answer: "Use async/await with Task-based programming. Key rules: Avoid async void (except event handlers), use ConfigureAwait(false) in libraries, wrap in try-catch for error handling, Task.WhenAll for parallel operations.",
             code: `// Basic async/await pattern
 public async Task<User> GetUserAsync(int id)
 {
@@ -166,7 +166,7 @@ public async IAsyncEnumerable<DataPoint> StreamDataAsync(
         },
         {
             question: "What is the difference between Task and ValueTask?",
-            answer: "ValueTask is a struct that avoids allocation when result is available synchronously. Use for hot paths where most calls complete synchronously. Task is a reference type that always allocates on the heap.",
+            answer: "ValueTask is a struct that avoids allocation when result is synchronous - use for hot paths. Task is a class that always allocates. ValueTask can only be awaited once - convert to Task with AsTask() if needed multiple times.",
             code: `// ValueTask for synchronous fast path
 public interface ICache
 {
@@ -252,7 +252,7 @@ public class Repository
         },
         {
             question: "Explain memory management and garbage collection in .NET.",
-            answer: "Generational GC with Gen 0, 1, 2. Large Object Heap (LOH) for objects > 85KB. GC modes: Workstation vs Server, Concurrent vs Background. Optimize using object pooling, ArrayPool, and Span<T>.",
+            answer: "GC has generations 0/1/2 plus Large Object Heap (>85KB). Two modes: Workstation vs Server, Concurrent vs Background. Optimize with object pooling, ArrayPool, Span<T>, and prefer structs over classes.",
             code: `// Understanding GC generations
 public class GCExample
 {
@@ -368,7 +368,7 @@ public static class StringExtensions
         },
         {
             question: "What are nullable reference types in C# 8+?",
-            answer: "Feature for null safety where reference types are non-null by default. Use ? to mark nullable. Compiler provides warnings for potential null reference exceptions. Helps catch null bugs at compile time.",
+            answer: "Reference types are non-null by default in C# 8+. Add ? to mark nullable. Compiler warns about potential null references. Use attributes like NotNull, NotNullWhen, MemberNotNullWhen for flow analysis.",
             code: `// Enable nullable reference types in csproj
 <Nullable>enable</Nullable>
 
@@ -475,7 +475,7 @@ public class OrderService
         },
         {
             question: "How do you use Span<T> and Memory<T> for performance?",
-            answer: "Span<T> provides stack-allocated views over memory without allocations. Memory<T> is like Span but can live on heap. Use for parsing, string manipulation, and working with arrays without copying data.",
+            answer: "Span<T> provides stack-allocated views without allocation, sync-only. Memory<T> can live on heap and works with async. Use for parsing and slicing data without copying. ReadOnlySpan for string manipulation.",
             code: `// Span<T> for zero-allocation string parsing
 public static class CsvParser
 {
@@ -610,11 +610,11 @@ public static class ArrayExtensions
         },
         {
             question: "Explain different types of Action Results in ASP.NET Core.",
-            answer: "IActionResult for flexible return types, ActionResult<T> for strongly typed with implicit operators. Specific results: Ok(), BadRequest(), NotFound(). ActionResult<T> preferred for better OpenAPI documentation."
+            answer: "IActionResult for flexible return types. ActionResult<T> for strongly-typed returns with implicit operators. Common results: Ok(), BadRequest(), NotFound(). Prefer ActionResult<T> for better OpenAPI documentation."
         },
         {
             question: "What are record types and when do you use them?",
-            answer: "Records provide immutable data types with value equality. Use for DTOs and domain models. Features: automatic equality, with-expressions for non-destructive mutation, concise syntax with positional parameters.",
+            answer: "Records are immutable types with value equality. Use for DTOs and domain models. Features: automatic equality, 'with' expressions for non-destructive updates, positional parameters, deconstruction support.",
             code: `// Basic record declaration
 public record Person(string FirstName, string LastName, DateTime BirthDate);
 
@@ -697,7 +697,7 @@ Console.WriteLine(orders.Add(order2)); // False (same values)`
         },
         {
             question: "How do you implement middleware in ASP.NET Core?",
-            answer: "Middleware components form a pipeline. Each can process requests before passing to next, process responses on way back, or short-circuit. Implement with InvokeAsync method or use app.Use() in startup.",
+            answer: "Middleware forms a pipeline: Request → MW1 → MW2 → Response. Each middleware can process requests, modify response, or short-circuit. Implement with InvokeAsync(HttpContext) method or inline with app.Use().",
             code: `// Custom middleware class
 public class RequestTimingMiddleware
 {
@@ -818,11 +818,11 @@ public class RateLimitingMiddleware
         },
         {
             question: "Explain ConfigureAwait and SynchronizationContext.",
-            answer: "ConfigureAwait(false) prevents capturing the synchronization context, improving performance in libraries and avoiding deadlocks. Default (true) preserves context, needed for UI updates or HttpContext access."
+            answer: "ConfigureAwait(false) prevents capturing synchronization context - improves performance and avoids deadlocks. Use in library code. Default (true) preserves context, needed for UI updates or HttpContext access."
         },
         {
             question: "What is pattern matching in C# and its evolution?",
-            answer: "C# 7: Type and constant patterns. C# 8: Property, tuple, positional patterns. C# 9: Relational, logical patterns. C# 10: Extended property patterns. C# 11: List patterns. Enables concise, expressive code.",
+            answer: "Evolution: C# 7 added type/constant patterns. C# 8: property/tuple patterns. C# 9: relational (<,>) and logical (and/or). C# 10: nested properties. C# 11: list patterns [1,2,..]. Use switch expressions for concise code.",
             code: `// C# 7: Type and constant patterns
 public string DescribeValue(object value)
 {
@@ -924,7 +924,7 @@ public void ProcessNode(TreeNode node)
         },
         {
             question: "How do you handle global exception handling in ASP.NET Core?",
-            answer: "Use exception middleware, IExceptionHandler (NET 8+), or UseExceptionHandler. Return Problem Details for standardized error responses. Log exceptions and provide appropriate status codes.",
+            answer: ".NET 8+ uses IExceptionHandler interface. Legacy apps use UseExceptionHandler. Return ProblemDetails for standard error responses (RFC 7807). Map exceptions to appropriate HTTP status codes and always log.",
             code: `// .NET 8+ with IExceptionHandler
 public class GlobalExceptionHandler : IExceptionHandler
 {
@@ -1067,17 +1067,17 @@ public class Result<T>
         },
         {
             question: "What are channels and how do they compare to other producer-consumer patterns?",
-            answer: "Channels provide thread-safe producer-consumer patterns with async support. Better than BlockingCollection for async scenarios. Support bounded/unbounded capacity, multiple readers/writers."
+            answer: "Channels provide async producer-consumer patterns. Better than BlockingCollection for async scenarios. Support bounded/unbounded capacity and multiple readers/writers. Create with Channel<T>.CreateUnbounded() or CreateBounded()."
         },
         {
             question: "Explain the new Native AOT features in .NET 8.",
-            answer: "Compile to native code with no JIT overhead. Benefits: faster startup, lower memory, self-contained executables. Trade-offs: larger binaries, no dynamic loading, limited reflection."
+            answer: "Native AOT compiles to native code without JIT. Benefits: faster startup, lower memory usage, self-contained executables. Limitations: larger binaries, no dynamic loading, limited reflection support."
         }
     ],
     angular: [
         {
             question: "Explain Angular's change detection strategy in detail.",
-            answer: "Angular uses Zone.js to patch async operations and trigger change detection. Default strategy checks all components top-down. OnPush strategy only checks when inputs change, events fire, or observable emits. Use OnPush with immutable data for better performance.",
+            answer: "Zone.js patches async operations to trigger change detection. Default strategy checks all components top-down. OnPush only checks when @Input changes, events fire, or observables emit. Best used with immutable data.",
             code: `// Default Change Detection
 @Component({
   selector: 'app-default',
@@ -1117,7 +1117,7 @@ export class ObservableComponent {
         },
         {
             question: "How do you implement custom form controls with ControlValueAccessor?",
-            answer: "Implement ControlValueAccessor interface with writeValue(), registerOnChange(), registerOnTouched(), and setDisabledState(). Provide NG_VALUE_ACCESSOR token. Enables custom components to work seamlessly with Angular forms.",
+            answer: "Implement ControlValueAccessor with four methods: writeValue(), registerOnChange(), registerOnTouched(), setDisabledState(). Provide NG_VALUE_ACCESSOR token. This enables custom components to work seamlessly with Angular forms.",
             code: `import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -1173,7 +1173,7 @@ export class CustomInputComponent implements ControlValueAccessor {
         },
         {
             question: "What are the most important RxJS operators and their use cases?",
-            answer: "map/filter/tap for basic transformations. switchMap for cancelling previous (search). mergeMap for parallel processing. debounceTime to delay emissions. distinctUntilChanged to filter duplicates. catchError/retry for error handling. combineLatest/forkJoin to combine streams.",
+            answer: "Transform data with map/filter/tap. Cancel previous with switchMap (perfect for search). Run parallel with mergeMap. Delay emissions with debounceTime. Remove duplicates with distinctUntilChanged. Handle errors with catchError/retry. Combine streams with combineLatest/forkJoin.",
             code: `// Search with debounce and switchMap
 searchControl.valueChanges.pipe(
   debounceTime(300),
@@ -1300,7 +1300,7 @@ export class CleanupComponent implements OnDestroy {
         },
         {
             question: "Explain Angular Signals and how they differ from RxJS.",
-            answer: "Signals (Angular 16+) provide synchronous reactive state. Simpler than RxJS for basic state. Features: automatic dependency tracking, computed values, better performance. RxJS still needed for async operations, complex transformations.",
+            answer: "Signals provide synchronous reactive state with automatic dependency tracking and computed values. Simpler than RxJS for basic state management. Still use RxJS for async operations, complex operators, and stream transformations.",
             code: `// Creating and using signals
 import { signal, computed, effect } from '@angular/core';
 
@@ -1370,7 +1370,7 @@ export class InteropComponent {
         },
         {
             question: "How do you implement lazy loading with preloading strategies?",
-            answer: "Use loadChildren in routes with dynamic imports. Preloading strategies: PreloadAllModules, NoPreloading, or custom. Custom strategies can preload based on user behavior, network speed, or route priority.",
+            answer: "Use loadChildren with dynamic imports for lazy loading. Preloading strategies include PreloadAllModules, NoPreloading, or custom strategies. Custom strategies can preload based on user behavior, network speed, or route priority.",
             code: `// App routing with lazy loading
 const routes: Routes = [
   {
@@ -1445,11 +1445,11 @@ export class PredictivePreloadingStrategy implements PreloadingStrategy {
         },
         {
             question: "What is ViewEncapsulation and its options?",
-            answer: "Controls CSS scope. Emulated (default): Angular adds attributes to scope styles. None: styles are global. ShadowDom: uses native shadow DOM for true isolation. Choose based on styling needs and browser support."
+            answer: "Controls CSS scoping in components. Emulated (default) adds attributes to scope styles. None makes styles global. ShadowDom uses native shadow DOM for true isolation. Choose based on styling needs and browser support."
         },
         {
             question: "Explain the differences between ViewChild, ContentChild, and their plural versions.",
-            answer: "ViewChild queries elements in component's template. ContentChild queries projected content. Plural versions return QueryList. Use static:true for access in ngOnInit, static:false (default) for dynamic content.",
+            answer: "ViewChild queries elements in component's template. ContentChild queries projected content. Plural versions return QueryList. Use static:true for access in ngOnInit, static:false for dynamic content or structural directives.",
             code: `// ViewChild - Query template elements
 @Component({
   selector: 'app-parent',
@@ -1534,11 +1534,11 @@ export class TabsComponent implements AfterContentInit {
         },
         {
             question: "How do you optimize bundle size in Angular?",
-            answer: "Tree shaking with production builds, lazy loading modules, dynamic imports for libraries, analyze with webpack-bundle-analyzer, remove unused imports, use lighter alternatives, implement differential loading."
+            answer: "Tree-shake with production builds, lazy load modules, use dynamic imports for libraries. Analyze with webpack-bundle-analyzer, remove unused imports, choose lighter alternatives, implement differential loading, use OnPush change detection."
         },
         {
             question: "What are standalone components in Angular?",
-            answer: "Components without NgModules (Angular 14+). Import dependencies directly in component. Benefits: simpler architecture, better tree-shaking, easier lazy loading. Mark with standalone:true and use imports array.",
+            answer: "Components without NgModules (Angular 14+). Mark with standalone:true and use imports array. Benefits: simpler architecture, better tree-shaking, easier lazy loading. Use bootstrapApplication() to bootstrap.",
             code: `// Standalone component
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -1748,11 +1748,11 @@ export class InfiniteScrollComponent {
         },
         {
             question: "Explain Angular's dependency injection hierarchy.",
-            answer: "Root injector for app-wide singletons. Module injectors per lazy-loaded module. Component injectors in component tree. Element injectors for directives. Child injectors can override parent providers."
+            answer: "DI hierarchy flows: Root injector (app-wide) → Module injectors (lazy modules) → Component injectors (component tree) → Element injectors (directives). Child injectors can override parent providers. Use providedIn: 'root' for singletons."
         },
         {
             question: "What are the new control flow syntax in Angular 17+?",
-            answer: "@if/@else for conditionals, @for with track for loops, @switch/@case for multiple conditions. Replace *ngIf, *ngFor, *ngSwitch. Better performance, type checking, and developer experience.",
+            answer: "New syntax: @if/@else for conditionals, @for with required track for loops, @switch/@case for multiple conditions. Replace *ngIf/*ngFor/*ngSwitch directives. Benefits: better performance, type checking, developer experience. Use @empty for empty collections.",
             code: `// New control flow syntax (Angular 17+)
 
 // @if / @else if / @else
@@ -1861,11 +1861,11 @@ export class DeferredContentComponent {
     aiml: [
         {
             question: "Explain the bias-variance tradeoff.",
-            answer: "Bias is error from wrong assumptions (underfitting) - model too simple. Variance is error from sensitivity to fluctuations (overfitting) - model too complex. Goal is to balance both for optimal performance through techniques like cross-validation and regularization."
+            answer: "Bias is error from oversimplified models (underfitting). Variance is error from overly sensitive models (overfitting). Balance both using cross-validation and regularization. Goal: achieve low bias and low variance for optimal performance."
         },
         {
             question: "How do you handle imbalanced datasets?",
-            answer: "Use resampling techniques: SMOTE, undersampling, oversampling. Adjust class weights in loss function. Use different metrics: Precision, Recall, F1, AUC-ROC instead of accuracy. Consider ensemble methods or anomaly detection approaches.",
+            answer: "Handle imbalanced data with resampling techniques: SMOTE, undersampling, oversampling. Adjust class weights to 'balanced' in models. Use appropriate metrics: F1-score, AUC-ROC instead of accuracy. Consider ensemble methods or anomaly detection approaches.",
             code: `# Python example for handling imbalanced datasets
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -1942,7 +1942,7 @@ brf.fit(X_train, y_train)`
         },
         {
             question: "What is LoRA fine-tuning and when would you use it?",
-            answer: "Low-Rank Adaptation allows efficient fine-tuning by training only small adapter matrices instead of all parameters. Reduces memory by 90%+, maintains base model quality. Use when fine-tuning large models with limited resources.",
+            answer: "LoRA trains small adapter matrices instead of all parameters. The rank 'r' (typically 16) controls adapter size. Reduces memory usage by 90%+ while maintaining base model quality. Use for fine-tuning large models with limited GPU. QLoRA combines 4-bit quantization with LoRA.",
             code: `# LoRA implementation example using HuggingFace PEFT
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import LoraConfig, get_peft_model, TaskType
@@ -2040,11 +2040,11 @@ model = get_peft_model(model, lora_config)`
         },
         {
             question: "Explain different types of gradient boosting implementations.",
-            answer: "XGBoost: fast, handles missing values, built-in regularization. LightGBM: faster training with leaf-wise growth. CatBoost: handles categorical features natively. Scikit-learn: simple, good for prototyping. Choose based on data and requirements."
+            answer: "XGBoost is fast, handles missing values, includes L1/L2 regularization. LightGBM is faster with leaf-wise growth strategy. CatBoost handles categorical features natively without encoding. Scikit-learn's GradientBoosting is simple for prototyping. Choose based on your specific needs."
         },
         {
             question: "How does attention mechanism work in transformers?",
-            answer: "Attention allows models to focus on relevant parts of input. Computed as: Attention(Q,K,V) = softmax(QK^T/√d_k)V. Self-attention within same sequence, cross-attention between sequences. Multi-head attention learns multiple attention patterns.",
+            answer: "Attention lets models focus on relevant input parts. Core formula: Attention(Q,K,V) = softmax(QK^T/√d_k)V. Self-attention operates within same sequence, cross-attention between different sequences. Multi-head attention learns multiple attention patterns in parallel for richer representations.",
             code: `# Simplified attention mechanism implementation
 import torch
 import torch.nn as nn
@@ -3959,7 +3959,7 @@ SELECT * FROM employees AS OF TIMESTAMP (SYSTIMESTAMP - INTERVAL '1' HOUR);`
         // AI/ML Interview Questions
         {
             question: "Explain the difference between supervised, unsupervised, and reinforcement learning.",
-            answer: "Supervised: Learning from labeled data (input-output pairs) for classification/regression. Unsupervised: Finding patterns in unlabeled data through clustering/dimensionality reduction. Reinforcement: Agent learns through interactions with environment to maximize reward.",
+            answer: "Supervised learning uses labeled data for classification/regression tasks. Unsupervised finds patterns without labels using clustering or dimensionality reduction. Reinforcement learning has agents that learn through environment interaction to maximize rewards.",
             code: `# Supervised Learning - Classification
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -3990,7 +3990,7 @@ class Agent:
         },
         {
             question: "What is the bias-variance tradeoff in machine learning?",
-            answer: "Bias: Error from overly simplistic assumptions (underfitting). Variance: Error from sensitivity to small fluctuations (overfitting). Tradeoff: Increasing model complexity reduces bias but increases variance. Goal is to find optimal balance for best generalization.",
+            answer: "Bias is error from oversimplified models (underfitting). Variance is error from overly complex models (overfitting). As model complexity increases, bias decreases but variance increases. Goal: find the sweet spot balancing both.",
             code: `# Demonstrating bias-variance tradeoff
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
@@ -4022,7 +4022,7 @@ for degree in range(1, 20):
         },
         {
             question: "Explain gradient descent and its variants (SGD, Mini-batch, Adam).",
-            answer: "Gradient Descent: Optimization algorithm that iteratively moves parameters in direction of steepest decrease of loss. SGD: Updates using single sample (noisy but faster). Mini-batch: Updates using small batches (balanced). Adam: Adaptive learning rates with momentum for faster convergence.",
+            answer: "Gradient Descent iteratively moves parameters toward minimum loss. SGD updates using one sample (faster but noisy). Mini-batch updates per batch (balanced approach). Adam combines adaptive learning rates with momentum for faster convergence.",
             code: `import numpy as np
 
 # Vanilla Gradient Descent
@@ -4084,7 +4084,7 @@ class AdamOptimizer:
         },
         {
             question: "What is backpropagation and how does it work in neural networks?",
-            answer: "Backpropagation: Algorithm to compute gradients in neural networks using chain rule. Forward pass computes predictions, backward pass propagates errors layer by layer to calculate gradients. Enables efficient training of deep networks by reusing intermediate computations.",
+            answer: "Backpropagation computes gradients using chain rule. Forward pass: input flows to predictions. Backward pass: errors propagate back to calculate gradients layer by layer. Reuses intermediate computations for efficient deep network training.",
             code: `import numpy as np
 
 class NeuralNetwork:
@@ -4150,7 +4150,7 @@ for epoch in range(100):
         },
         {
             question: "Explain regularization techniques (L1, L2, Dropout, Early Stopping).",
-            answer: "L1 (Lasso): Adds sum of absolute weights to loss, creates sparse models. L2 (Ridge): Adds sum of squared weights, prevents large weights. Dropout: Randomly deactivates neurons during training to prevent co-adaptation. Early Stopping: Stops training when validation performance degrades.",
+            answer: "L1/Lasso adds absolute weight penalty creating sparse models. L2/Ridge adds squared weight penalty keeping weights small. Dropout randomly deactivates neurons preventing co-adaptation. Early stopping halts training when validation loss starts increasing.",
             code: `# L1 and L2 Regularization
 from sklearn.linear_model import Ridge, Lasso, ElasticNet
 
@@ -4221,7 +4221,7 @@ for epoch in range(1000):
         },
         {
             question: "What is cross-validation and why is it important?",
-            answer: "Cross-validation: Technique to assess model generalization by splitting data into multiple folds. K-fold CV: Train on k-1 folds, validate on 1 fold, repeat k times. Helps detect overfitting, provides robust performance estimates, and maximizes data usage for training/validation.",
+            answer: "K-fold CV splits data into k parts, trains on k-1 folds, tests on 1, repeats k times. Benefits: detects overfitting, provides robust metrics, uses all data. Special variants: Stratified (maintains class balance), Time Series (preserves order).",
             code: `from sklearn.model_selection import cross_val_score, KFold, StratifiedKFold
 from sklearn.model_selection import cross_validate
 import numpy as np
@@ -4272,7 +4272,7 @@ for metric, scores in cv_results.items():
         },
         {
             question: "Explain the concept of feature engineering and its importance in ML.",
-            answer: "Feature engineering: Process of creating new features or transforming existing ones to improve model performance. Includes scaling, encoding categoricals, creating interactions, polynomial features, domain-specific transformations. Often more impactful than algorithm selection.",
+            answer: "Feature engineering creates or transforms features to improve model performance. Methods include scaling, encoding categoricals, creating interactions, polynomial features, and domain-specific transformations. Often more impactful than algorithm selection.",
             code: `import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, LabelEncoder
@@ -4334,7 +4334,7 @@ selected_features = X.columns[rfe.support_]`
         },
         {
             question: "What are word embeddings (Word2Vec, GloVe) and how do they work?",
-            answer: "Word embeddings: Dense vector representations of words capturing semantic relationships. Word2Vec uses Skip-gram (predict context from word) or CBOW (predict word from context). GloVe uses global word co-occurrence statistics. Both create vectors where similar words are close in vector space.",
+            answer: "Word embeddings are dense vectors capturing semantic meaning. Word2Vec uses Skip-gram (predict context from word) or CBOW (predict word from context). GloVe uses global co-occurrence statistics. Result: similar words have nearby vectors in space.",
             code: `# Word2Vec implementation concept
 import numpy as np
 from collections import defaultdict
@@ -4430,7 +4430,7 @@ embedding_layer = Embedding(
         },
         {
             question: "What is the attention mechanism and how does it improve sequence models?",
-            answer: "Attention allows models to focus on relevant parts of input when producing output. Instead of fixed-size context vectors, it computes weighted sum of all input states. Key components: Query, Key, Value matrices. Enables long-range dependencies and improves performance on translation, summarization tasks.",
+            answer: "Attention mechanisms let models focus on relevant input parts. Computes weighted sum of all states instead of fixed-size context. Uses Query, Key, Value matrices to calculate attention weights. Enables long-range dependencies and improves translation/summarization.",
             code: `import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -4541,7 +4541,7 @@ class SelfAttentionLayer(nn.Module):
         },
         {
             question: "Explain batch normalization and its benefits in deep learning.",
-            answer: "Batch Normalization normalizes inputs to each layer using batch statistics (mean, variance). Benefits: Faster training, higher learning rates, reduces internal covariate shift, acts as regularization, less sensitive to initialization. Applied before/after activation functions.",
+            answer: "Batch normalization normalizes layer inputs using batch statistics (mean, variance). Benefits: faster training, allows higher learning rates, reduces internal covariate shift, acts as regularization, less sensitive to initialization. Apply before or after activation functions.",
             code: `import torch
 import torch.nn as nn
 import numpy as np
@@ -4634,7 +4634,7 @@ for epoch in range(epochs):
         // General Python Questions
         {
             question: "Explain Python's GIL (Global Interpreter Lock) and its implications.",
-            answer: "GIL is a mutex that protects access to Python objects, preventing multiple threads from executing Python bytecode simultaneously. Implications: Limits true parallelism in CPU-bound multi-threaded programs. Solutions: Use multiprocessing, async/await for I/O, or C extensions that release GIL.",
+            answer: "GIL (Global Interpreter Lock) allows only one thread to execute Python at a time. This limits true parallelism in CPU-bound tasks. Solutions: multiprocessing for CPU work, async/await for I/O, or C extensions like NumPy that release the GIL.",
             code: `import threading
 import multiprocessing
 import time
@@ -4719,7 +4719,7 @@ def numpy_parallel():
         },
         {
             question: "What are Python decorators and how do they work?",
-            answer: "Decorators are functions that modify behavior of other functions/classes without changing their source code. They use @ syntax and implement the decorator pattern. Common uses: logging, timing, caching, authentication, validation. Work by wrapping the original function.",
+            answer: "Decorators are functions that wrap and modify other functions using @decorator syntax. Common uses: logging, timing, caching, authentication, validation. Pattern: decorator takes function, returns wrapper function that adds behavior.",
             code: `import time
 import functools
 from typing import Any, Callable
@@ -4846,7 +4846,7 @@ def expensive_computation(n):
         },
         {
             question: "Explain Python's memory management and garbage collection.",
-            answer: "Python uses reference counting as primary mechanism, with cyclic garbage collector for circular references. Memory organized in private heap, managed by Python memory manager. Objects deallocated when reference count reaches zero. Generational GC handles cycles using threshold-based collection.",
+            answer: "Python uses reference counting plus cyclic garbage collector. Memory in private heap managed by Python. Objects deallocated when refcount reaches 0. Generational GC (0,1,2) handles circular references. Manual collection with gc.collect().",
             code: `import gc
 import sys
 import weakref
@@ -5001,7 +5001,7 @@ tracemalloc.stop()`
         },
         {
             question: "What is the difference between deep copy and shallow copy in Python?",
-            answer: "Shallow copy creates new object but references to nested objects are shared. Deep copy creates new object and recursively copies all nested objects. Shallow: copy.copy() or [:]. Deep: copy.deepcopy(). Important for mutable nested structures.",
+            answer: "Shallow copy creates new object but shares references to nested objects. Deep copy creates new object and recursively copies all nested objects. Use copy.copy() for shallow, copy.deepcopy() for deep. Critical when working with nested mutable structures.",
             code: `import copy
 
 # Demonstrating shallow vs deep copy
@@ -5123,7 +5123,7 @@ print(f"Shallow dict: {dict_shallow}")  # Nested structures are shared!`
         },
         {
             question: "Explain Python's context managers and the 'with' statement.",
-            answer: "Context managers ensure proper resource management using __enter__ and __exit__ methods. 'with' statement guarantees cleanup even if exceptions occur. Common uses: file handling, locks, database connections. Can create using contextlib decorators or classes.",
+            answer: "Context managers ensure proper resource management using __enter__ and __exit__ methods. The 'with' statement guarantees cleanup even if exceptions occur. Common uses: file handling, locks, database connections. Create with classes or @contextmanager decorator.",
             code: `import contextlib
 import sqlite3
 import threading
@@ -5299,7 +5299,7 @@ with change_dir('/tmp'):
         },
         {
             question: "What are metaclasses in Python and when would you use them?",
-            answer: "Metaclasses are classes whose instances are classes. They control class creation process. Default metaclass is 'type'. Use cases: ORMs, singleton patterns, class validation, API frameworks. Generally avoided unless building frameworks. 'Metaclasses are deeper magic than 99% of users should ever worry about.'",
+            answer: "Metaclasses are classes whose instances are classes themselves. Default metaclass is 'type'. Use cases: ORMs, singleton patterns, class validation, frameworks. Generally avoid unless building frameworks - 'deeper magic than 99% of users need'.",
             code: `# Understanding metaclasses
 # Classes are instances of metaclasses
 class SimpleClass:
@@ -5463,7 +5463,7 @@ print(OrderedClass._order)  # Preserves definition order`
         },
         {
             question: "Explain Python's async/await and how it differs from threading.",
-            answer: "Async/await enables cooperative multitasking for I/O-bound operations using single thread. Threading uses OS threads for preemptive multitasking. Async is more efficient for I/O, avoids GIL issues, but requires async-aware libraries. Threading better for CPU-bound tasks with C extensions.",
+            answer: "Async/await provides cooperative multitasking on single thread for I/O operations. Threading uses OS threads with preemptive multitasking. Async is better for I/O (avoids GIL) but needs async libraries. Threading better for CPU-bound tasks with C extensions.",
             code: `import asyncio
 import aiohttp
 import threading
@@ -5666,7 +5666,7 @@ async def make_async():
         },
         {
             question: "What are Python's magic methods (dunder methods) and their uses?",
-            answer: "Magic methods are special methods with double underscores that define object behavior for built-in operations. Examples: __init__ (constructor), __str__ (string representation), __eq__ (equality), __len__ (length), __getitem__ (indexing). Enable Pythonic interfaces and operator overloading.",
+            answer: "Magic methods (dunder methods) define object behavior for built-in operations. Key ones: __init__ (constructor), __str__ (string representation), __eq__ (equality), __len__ (length), __getitem__ (indexing), __add__ (addition). Enable operator overloading and Pythonic interfaces.",
             code: `class Vector:
     def __init__(self, x, y):
         self.x = x
@@ -5900,7 +5900,7 @@ class Complex:
         },
         {
             question: "How do Python generators work and what are their advantages?",
-            answer: "Generators are iterators that yield values lazily using 'yield' keyword. They maintain state between calls, use minimal memory, and enable processing of large/infinite sequences. Created with generator functions or expressions. Advantages: memory efficiency, cleaner code, composability.",
+            answer: "Generators are lazy iterators created with 'yield' keyword. They maintain state between calls, use minimal memory, and can handle large or infinite sequences. Create with generator functions or expressions. Benefits: memory efficiency, composability, cleaner code.",
             code: `# Basic generator function
 def fibonacci_generator(n):
     a, b = 0, 1
