@@ -200,7 +200,45 @@ document.addEventListener('DOMContentLoaded', function() {
         front.querySelector('.card-category').textContent = getCategoryName(card.category);
         front.querySelector('.card-question').textContent = card.question;
         back.querySelector('.card-category').textContent = getCategoryName(card.category);
-        back.querySelector('.card-answer').textContent = card.answer;
+        
+        // Handle answer and code examples
+        const answerDiv = back.querySelector('.card-answer');
+        answerDiv.innerHTML = ''; // Clear existing content
+        
+        // Add the main answer
+        const answerText = document.createElement('div');
+        answerText.className = 'answer-text';
+        answerText.textContent = card.answer;
+        answerDiv.appendChild(answerText);
+        
+        // Add code example if available
+        if (card.code) {
+            const codeSection = document.createElement('div');
+            codeSection.className = 'code-section';
+            
+            const codeToggle = document.createElement('button');
+            codeToggle.className = 'code-toggle';
+            codeToggle.innerHTML = '<i class="fas fa-code"></i> View Code Example';
+            codeToggle.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent card flip
+                codeContent.classList.toggle('expanded');
+                codeToggle.innerHTML = codeContent.classList.contains('expanded') 
+                    ? '<i class="fas fa-code"></i> Hide Code Example' 
+                    : '<i class="fas fa-code"></i> View Code Example';
+            });
+            
+            const codeContent = document.createElement('div');
+            codeContent.className = 'code-content';
+            const codeBlock = document.createElement('pre');
+            const code = document.createElement('code');
+            code.textContent = card.code;
+            codeBlock.appendChild(code);
+            codeContent.appendChild(codeBlock);
+            
+            codeSection.appendChild(codeToggle);
+            codeSection.appendChild(codeContent);
+            answerDiv.appendChild(codeSection);
+        }
 
         currentCardSpan.textContent = index + 1;
         updateProgress();
