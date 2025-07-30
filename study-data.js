@@ -3954,6 +3954,2136 @@ SELECT * FROM employees AS OF TIMESTAMP (SYSTIMESTAMP - INTERVAL '1' HOUR);`
             question: "What's the difference between VARCHAR and VARCHAR2 in Oracle?",
             answer: "VARCHAR2: Oracle-specific, recommended, max 4000 bytes in SQL, 32767 in PL/SQL. VARCHAR: Reserved for future use, currently synonymous with VARCHAR2. Always use VARCHAR2 in Oracle. Consider CLOB for larger text data."
         }
+    ],
+    python: [
+        // AI/ML Interview Questions
+        {
+            question: "Explain the difference between supervised, unsupervised, and reinforcement learning.",
+            answer: "Supervised: Learning from labeled data (input-output pairs) for classification/regression. Unsupervised: Finding patterns in unlabeled data through clustering/dimensionality reduction. Reinforcement: Agent learns through interactions with environment to maximize reward.",
+            code: `# Supervised Learning - Classification
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+# Training with labeled data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+clf = RandomForestClassifier()
+clf.fit(X_train, y_train)  # Learning from labeled examples
+predictions = clf.predict(X_test)
+
+# Unsupervised Learning - Clustering
+from sklearn.cluster import KMeans
+
+# Finding patterns without labels
+kmeans = KMeans(n_clusters=3)
+clusters = kmeans.fit_predict(X)  # No y labels needed
+
+# Reinforcement Learning concept
+class Agent:
+    def __init__(self):
+        self.q_table = {}  # State-action values
+    
+    def choose_action(self, state, epsilon=0.1):
+        if random.random() < epsilon:
+            return random.choice(actions)  # Explore
+        return max(actions, key=lambda a: self.q_table.get((state, a), 0))  # Exploit`
+        },
+        {
+            question: "What is the bias-variance tradeoff in machine learning?",
+            answer: "Bias: Error from overly simplistic assumptions (underfitting). Variance: Error from sensitivity to small fluctuations (overfitting). Tradeoff: Increasing model complexity reduces bias but increases variance. Goal is to find optimal balance for best generalization.",
+            code: `# Demonstrating bias-variance tradeoff
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import Pipeline
+
+# High bias model (underfitting)
+linear_model = LinearRegression()
+linear_model.fit(X_train, y_train)
+
+# Balanced model
+poly_features = PolynomialFeatures(degree=3)
+balanced_model = Pipeline([('poly', poly_features), ('linear', LinearRegression())])
+balanced_model.fit(X_train, y_train)
+
+# High variance model (overfitting)
+complex_features = PolynomialFeatures(degree=15)
+complex_model = Pipeline([('poly', complex_features), ('linear', LinearRegression())])
+complex_model.fit(X_train, y_train)
+
+# Validation curves show the tradeoff
+train_scores = []
+val_scores = []
+for degree in range(1, 20):
+    model = Pipeline([('poly', PolynomialFeatures(degree)), 
+                     ('linear', LinearRegression())])
+    model.fit(X_train, y_train)
+    train_scores.append(model.score(X_train, y_train))
+    val_scores.append(model.score(X_val, y_val))`
+        },
+        {
+            question: "Explain gradient descent and its variants (SGD, Mini-batch, Adam).",
+            answer: "Gradient Descent: Optimization algorithm that iteratively moves parameters in direction of steepest decrease of loss. SGD: Updates using single sample (noisy but faster). Mini-batch: Updates using small batches (balanced). Adam: Adaptive learning rates with momentum for faster convergence.",
+            code: `import numpy as np
+
+# Vanilla Gradient Descent
+def gradient_descent(X, y, learning_rate=0.01, iterations=1000):
+    m, n = X.shape
+    theta = np.zeros(n)
+    
+    for _ in range(iterations):
+        # Compute gradient using all data
+        predictions = X @ theta
+        errors = predictions - y
+        gradient = (1/m) * X.T @ errors
+        theta -= learning_rate * gradient
+    return theta
+
+# Stochastic Gradient Descent (SGD)
+def sgd(X, y, learning_rate=0.01, iterations=1000):
+    m, n = X.shape
+    theta = np.zeros(n)
+    
+    for _ in range(iterations):
+        # Random sample
+        idx = np.random.randint(0, m)
+        xi, yi = X[idx:idx+1], y[idx:idx+1]
+        
+        # Update using single sample
+        prediction = xi @ theta
+        error = prediction - yi
+        gradient = xi.T @ error
+        theta -= learning_rate * gradient
+    return theta
+
+# Adam Optimizer
+class AdamOptimizer:
+    def __init__(self, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8):
+        self.lr = learning_rate
+        self.beta1 = beta1
+        self.beta2 = beta2
+        self.epsilon = epsilon
+        self.m = None  # First moment
+        self.v = None  # Second moment
+        self.t = 0
+    
+    def update(self, params, gradients):
+        if self.m is None:
+            self.m = np.zeros_like(params)
+            self.v = np.zeros_like(params)
+        
+        self.t += 1
+        self.m = self.beta1 * self.m + (1 - self.beta1) * gradients
+        self.v = self.beta2 * self.v + (1 - self.beta2) * (gradients ** 2)
+        
+        # Bias correction
+        m_hat = self.m / (1 - self.beta1 ** self.t)
+        v_hat = self.v / (1 - self.beta2 ** self.t)
+        
+        params -= self.lr * m_hat / (np.sqrt(v_hat) + self.epsilon)
+        return params`
+        },
+        {
+            question: "What is backpropagation and how does it work in neural networks?",
+            answer: "Backpropagation: Algorithm to compute gradients in neural networks using chain rule. Forward pass computes predictions, backward pass propagates errors layer by layer to calculate gradients. Enables efficient training of deep networks by reusing intermediate computations.",
+            code: `import numpy as np
+
+class NeuralNetwork:
+    def __init__(self, layers):
+        self.weights = []
+        self.biases = []
+        
+        # Initialize weights and biases
+        for i in range(len(layers) - 1):
+            w = np.random.randn(layers[i], layers[i+1]) * 0.1
+            b = np.zeros((1, layers[i+1]))
+            self.weights.append(w)
+            self.biases.append(b)
+    
+    def sigmoid(self, x):
+        return 1 / (1 + np.exp(-x))
+    
+    def sigmoid_derivative(self, x):
+        return x * (1 - x)
+    
+    def forward(self, X):
+        self.activations = [X]
+        self.z_values = []
+        
+        for i in range(len(self.weights)):
+            z = self.activations[-1] @ self.weights[i] + self.biases[i]
+            self.z_values.append(z)
+            
+            if i < len(self.weights) - 1:
+                a = self.sigmoid(z)  # Hidden layers
+            else:
+                a = z  # Output layer (linear)
+            self.activations.append(a)
+        
+        return self.activations[-1]
+    
+    def backward(self, X, y, learning_rate=0.1):
+        m = X.shape[0]
+        
+        # Start with output layer error
+        delta = self.activations[-1] - y
+        
+        # Backpropagate through layers
+        for i in range(len(self.weights) - 1, -1, -1):
+            # Gradient computation
+            dW = (1/m) * self.activations[i].T @ delta
+            db = (1/m) * np.sum(delta, axis=0, keepdims=True)
+            
+            # Update weights and biases
+            self.weights[i] -= learning_rate * dW
+            self.biases[i] -= learning_rate * db
+            
+            # Propagate error to previous layer
+            if i > 0:
+                delta = (delta @ self.weights[i].T) * self.sigmoid_derivative(self.activations[i])
+
+# Training example
+nn = NeuralNetwork([784, 128, 64, 10])  # MNIST architecture
+for epoch in range(100):
+    predictions = nn.forward(X_train)
+    loss = np.mean((predictions - y_train)**2)
+    nn.backward(X_train, y_train)`
+        },
+        {
+            question: "Explain regularization techniques (L1, L2, Dropout, Early Stopping).",
+            answer: "L1 (Lasso): Adds sum of absolute weights to loss, creates sparse models. L2 (Ridge): Adds sum of squared weights, prevents large weights. Dropout: Randomly deactivates neurons during training to prevent co-adaptation. Early Stopping: Stops training when validation performance degrades.",
+            code: `# L1 and L2 Regularization
+from sklearn.linear_model import Ridge, Lasso, ElasticNet
+
+# L2 Regularization (Ridge)
+ridge_model = Ridge(alpha=1.0)  # alpha controls regularization strength
+ridge_model.fit(X_train, y_train)
+
+# L1 Regularization (Lasso) - creates sparse models
+lasso_model = Lasso(alpha=0.1)
+lasso_model.fit(X_train, y_train)
+sparse_features = np.sum(lasso_model.coef_ != 0)  # Count non-zero coefficients
+
+# Combined L1 + L2 (Elastic Net)
+elastic_model = ElasticNet(alpha=0.1, l1_ratio=0.5)
+elastic_model.fit(X_train, y_train)
+
+# Dropout in Neural Networks
+import torch
+import torch.nn as nn
+
+class DropoutNet(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size, dropout_rate=0.5):
+        super().__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.dropout1 = nn.Dropout(dropout_rate)  # Randomly zero out neurons
+        self.fc2 = nn.Linear(hidden_size, hidden_size)
+        self.dropout2 = nn.Dropout(dropout_rate)
+        self.fc3 = nn.Linear(hidden_size, output_size)
+        
+    def forward(self, x):
+        x = torch.relu(self.fc1(x))
+        x = self.dropout1(x)  # Apply dropout during training
+        x = torch.relu(self.fc2(x))
+        x = self.dropout2(x)
+        x = self.fc3(x)
+        return x
+
+# Early Stopping
+class EarlyStopping:
+    def __init__(self, patience=10, min_delta=0.001):
+        self.patience = patience
+        self.min_delta = min_delta
+        self.counter = 0
+        self.best_loss = None
+        self.early_stop = False
+        
+    def __call__(self, val_loss):
+        if self.best_loss is None:
+            self.best_loss = val_loss
+        elif val_loss > self.best_loss - self.min_delta:
+            self.counter += 1
+            if self.counter >= self.patience:
+                self.early_stop = True
+        else:
+            self.best_loss = val_loss
+            self.counter = 0
+        return self.early_stop
+
+# Usage
+early_stopping = EarlyStopping(patience=5)
+for epoch in range(1000):
+    train_loss = train_epoch(model, train_loader)
+    val_loss = validate(model, val_loader)
+    
+    if early_stopping(val_loss):
+        print(f"Early stopping at epoch {epoch}")
+        break`
+        },
+        {
+            question: "What is cross-validation and why is it important?",
+            answer: "Cross-validation: Technique to assess model generalization by splitting data into multiple folds. K-fold CV: Train on k-1 folds, validate on 1 fold, repeat k times. Helps detect overfitting, provides robust performance estimates, and maximizes data usage for training/validation.",
+            code: `from sklearn.model_selection import cross_val_score, KFold, StratifiedKFold
+from sklearn.model_selection import cross_validate
+import numpy as np
+
+# Basic k-fold cross-validation
+model = RandomForestClassifier()
+cv_scores = cross_val_score(model, X, y, cv=5, scoring='accuracy')
+print(f"CV Scores: {cv_scores}")
+print(f"Mean: {cv_scores.mean():.3f} (+/- {cv_scores.std() * 2:.3f})")
+
+# Manual k-fold implementation
+kfold = KFold(n_splits=5, shuffle=True, random_state=42)
+scores = []
+
+for train_idx, val_idx in kfold.split(X):
+    X_train, X_val = X[train_idx], X[val_idx]
+    y_train, y_val = y[train_idx], y[val_idx]
+    
+    model = RandomForestClassifier()
+    model.fit(X_train, y_train)
+    score = model.score(X_val, y_val)
+    scores.append(score)
+
+# Stratified k-fold for imbalanced datasets
+skfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+# Maintains class distribution in each fold
+
+# Time Series Cross-Validation
+from sklearn.model_selection import TimeSeriesSplit
+
+tscv = TimeSeriesSplit(n_splits=5)
+for train_idx, val_idx in tscv.split(X):
+    # Training data always comes before validation data
+    print(f"Train: {train_idx[:5]}... Val: {val_idx[:5]}...")
+
+# Cross-validation with multiple metrics
+scoring = {
+    'accuracy': 'accuracy',
+    'precision': 'precision_macro',
+    'recall': 'recall_macro',
+    'f1': 'f1_macro'
+}
+
+cv_results = cross_validate(model, X, y, cv=5, scoring=scoring)
+for metric, scores in cv_results.items():
+    if metric.startswith('test_'):
+        print(f"{metric}: {scores.mean():.3f}")`
+        },
+        {
+            question: "Explain the concept of feature engineering and its importance in ML.",
+            answer: "Feature engineering: Process of creating new features or transforming existing ones to improve model performance. Includes scaling, encoding categoricals, creating interactions, polynomial features, domain-specific transformations. Often more impactful than algorithm selection.",
+            code: `import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, LabelEncoder
+from sklearn.preprocessing import OneHotEncoder, PolynomialFeatures
+
+# Feature Scaling
+scaler = StandardScaler()  # Zero mean, unit variance
+X_scaled = scaler.fit_transform(X)
+
+# Min-Max Scaling
+minmax = MinMaxScaler()  # Scale to [0, 1]
+X_minmax = minmax.fit_transform(X)
+
+# Categorical Encoding
+# One-hot encoding
+onehot = OneHotEncoder(sparse=False)
+categorical_encoded = onehot.fit_transform(df[['category']])
+
+# Label encoding (for ordinal features)
+label_encoder = LabelEncoder()
+df['size_encoded'] = label_encoder.fit_transform(df['size'])  # S, M, L -> 0, 1, 2
+
+# Feature Creation
+df['price_per_sqft'] = df['price'] / df['square_feet']
+df['age'] = pd.datetime.now().year - df['year_built']
+df['total_rooms'] = df['bedrooms'] + df['bathrooms']
+
+# Polynomial Features
+poly = PolynomialFeatures(degree=2, include_bias=False)
+X_poly = poly.fit_transform(X)  # Creates x1, x2, x1^2, x1*x2, x2^2
+
+# Time-based Features
+df['day_of_week'] = pd.to_datetime(df['date']).dt.dayofweek
+df['month'] = pd.to_datetime(df['date']).dt.month
+df['is_weekend'] = df['day_of_week'].isin([5, 6]).astype(int)
+
+# Text Features
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+tfidf = TfidfVectorizer(max_features=1000, stop_words='english')
+text_features = tfidf.fit_transform(df['description'])
+
+# Binning continuous variables
+df['age_group'] = pd.cut(df['age'], bins=[0, 18, 35, 50, 65, 100], 
+                         labels=['child', 'young', 'middle', 'senior', 'elderly'])
+
+# Feature Selection
+from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.feature_selection import RFE
+
+# Select top k features
+selector = SelectKBest(score_func=f_classif, k=10)
+X_selected = selector.fit_transform(X, y)
+
+# Recursive Feature Elimination
+rfe = RFE(estimator=RandomForestClassifier(), n_features_to_select=10)
+X_rfe = rfe.fit_transform(X, y)
+selected_features = X.columns[rfe.support_]`
+        },
+        {
+            question: "What are word embeddings (Word2Vec, GloVe) and how do they work?",
+            answer: "Word embeddings: Dense vector representations of words capturing semantic relationships. Word2Vec uses Skip-gram (predict context from word) or CBOW (predict word from context). GloVe uses global word co-occurrence statistics. Both create vectors where similar words are close in vector space.",
+            code: `# Word2Vec implementation concept
+import numpy as np
+from collections import defaultdict
+
+class Word2Vec:
+    def __init__(self, sentences, vector_size=100, window=5, min_count=1):
+        self.vector_size = vector_size
+        self.window = window
+        self.min_count = min_count
+        self.word_vectors = {}
+        self.vocabulary = self.build_vocabulary(sentences)
+        
+    def build_vocabulary(self, sentences):
+        word_count = defaultdict(int)
+        for sentence in sentences:
+            for word in sentence:
+                word_count[word] += 1
+        
+        vocab = {word: idx for idx, (word, count) in enumerate(word_count.items()) 
+                 if count >= self.min_count}
+        return vocab
+    
+    def train_skip_gram(self, sentences, epochs=5, learning_rate=0.025):
+        # Initialize word vectors
+        vocab_size = len(self.vocabulary)
+        self.W1 = np.random.randn(vocab_size, self.vector_size) * 0.1
+        self.W2 = np.random.randn(self.vector_size, vocab_size) * 0.1
+        
+        for epoch in range(epochs):
+            for sentence in sentences:
+                for i, center_word in enumerate(sentence):
+                    if center_word not in self.vocabulary:
+                        continue
+                    
+                    # Get context words within window
+                    context_words = []
+                    for j in range(max(0, i - self.window), 
+                                  min(len(sentence), i + self.window + 1)):
+                        if i != j and sentence[j] in self.vocabulary:
+                            context_words.append(sentence[j])
+                    
+                    # Skip-gram training (simplified)
+                    center_idx = self.vocabulary[center_word]
+                    for context_word in context_words:
+                        context_idx = self.vocabulary[context_word]
+                        
+                        # Forward pass
+                        h = self.W1[center_idx]  # Hidden layer
+                        u = np.dot(h, self.W2)   # Output layer
+                        y_pred = self.softmax(u)
+                        
+                        # Backward pass (gradient descent)
+                        # ... (implementation details)
+
+# Using pre-trained embeddings with Gensim
+from gensim.models import Word2Vec, KeyedVectors
+
+# Train Word2Vec
+sentences = [['this', 'is', 'a', 'sentence'], ['another', 'sentence']]
+model = Word2Vec(sentences, vector_size=100, window=5, min_count=1, workers=4)
+
+# Access word vectors
+vector = model.wv['sentence']
+similar_words = model.wv.most_similar('sentence', topn=5)
+
+# Load pre-trained embeddings (GloVe)
+# Download from: https://nlp.stanford.edu/projects/glove/
+glove_file = 'glove.6B.100d.txt'
+word_vectors = {}
+
+with open(glove_file, 'r', encoding='utf-8') as f:
+    for line in f:
+        values = line.split()
+        word = values[0]
+        vector = np.array(values[1:], dtype='float32')
+        word_vectors[word] = vector
+
+# Using embeddings in neural networks
+embedding_matrix = np.zeros((vocab_size, embedding_dim))
+for word, idx in word_to_idx.items():
+    if word in word_vectors:
+        embedding_matrix[idx] = word_vectors[word]
+
+# Embedding layer in Keras/TensorFlow
+from tensorflow.keras.layers import Embedding
+
+embedding_layer = Embedding(
+    input_dim=vocab_size,
+    output_dim=embedding_dim,
+    weights=[embedding_matrix],
+    trainable=False  # Freeze pre-trained embeddings
+)`
+        },
+        {
+            question: "What is the attention mechanism and how does it improve sequence models?",
+            answer: "Attention allows models to focus on relevant parts of input when producing output. Instead of fixed-size context vectors, it computes weighted sum of all input states. Key components: Query, Key, Value matrices. Enables long-range dependencies and improves performance on translation, summarization tasks.",
+            code: `import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+
+# Basic Attention Mechanism
+class BahdanauAttention(nn.Module):
+    def __init__(self, hidden_size):
+        super().__init__()
+        self.W_q = nn.Linear(hidden_size, hidden_size)
+        self.W_k = nn.Linear(hidden_size, hidden_size)
+        self.W_v = nn.Linear(hidden_size, hidden_size)
+        self.fc = nn.Linear(hidden_size, 1)
+        
+    def forward(self, query, keys, values, mask=None):
+        # query: [batch, 1, hidden_size]
+        # keys: [batch, seq_len, hidden_size]
+        # values: [batch, seq_len, hidden_size]
+        
+        # Calculate attention scores
+        scores = self.fc(torch.tanh(self.W_q(query) + self.W_k(keys)))
+        scores = scores.squeeze(-1)  # [batch, seq_len]
+        
+        if mask is not None:
+            scores = scores.masked_fill(mask == 0, -1e9)
+        
+        # Apply softmax to get attention weights
+        attention_weights = F.softmax(scores, dim=-1)
+        
+        # Weighted sum of values
+        context = torch.bmm(attention_weights.unsqueeze(1), values)
+        
+        return context, attention_weights
+
+# Scaled Dot-Product Attention (used in Transformers)
+def scaled_dot_product_attention(query, key, value, mask=None, dropout=None):
+    d_k = query.size(-1)
+    
+    # Compute attention scores
+    scores = torch.matmul(query, key.transpose(-2, -1)) / np.sqrt(d_k)
+    
+    if mask is not None:
+        scores = scores.masked_fill(mask == 0, -1e9)
+    
+    attention_weights = F.softmax(scores, dim=-1)
+    
+    if dropout is not None:
+        attention_weights = dropout(attention_weights)
+    
+    output = torch.matmul(attention_weights, value)
+    return output, attention_weights
+
+# Multi-Head Attention
+class MultiHeadAttention(nn.Module):
+    def __init__(self, d_model, num_heads, dropout=0.1):
+        super().__init__()
+        assert d_model % num_heads == 0
+        
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = d_model // num_heads
+        
+        self.W_q = nn.Linear(d_model, d_model)
+        self.W_k = nn.Linear(d_model, d_model)
+        self.W_v = nn.Linear(d_model, d_model)
+        self.W_o = nn.Linear(d_model, d_model)
+        
+        self.dropout = nn.Dropout(dropout)
+        
+    def forward(self, query, key, value, mask=None):
+        batch_size = query.size(0)
+        
+        # Linear transformations and split into heads
+        Q = self.W_q(query).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
+        K = self.W_k(key).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
+        V = self.W_v(value).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
+        
+        # Apply attention
+        attention_output, attention_weights = scaled_dot_product_attention(
+            Q, K, V, mask, self.dropout
+        )
+        
+        # Concatenate heads
+        attention_output = attention_output.transpose(1, 2).contiguous().view(
+            batch_size, -1, self.d_model
+        )
+        
+        # Final linear transformation
+        output = self.W_o(attention_output)
+        
+        return output, attention_weights
+
+# Self-Attention example in sequence labeling
+class SelfAttentionLayer(nn.Module):
+    def __init__(self, input_dim):
+        super().__init__()
+        self.attention = nn.MultiheadAttention(input_dim, num_heads=8)
+        self.norm = nn.LayerNorm(input_dim)
+        self.dropout = nn.Dropout(0.1)
+        
+    def forward(self, x):
+        # Self-attention: query, key, value are all the same
+        attn_output, _ = self.attention(x, x, x)
+        
+        # Add & Norm (residual connection)
+        x = self.norm(x + self.dropout(attn_output))
+        return x`
+        },
+        {
+            question: "Explain batch normalization and its benefits in deep learning.",
+            answer: "Batch Normalization normalizes inputs to each layer using batch statistics (mean, variance). Benefits: Faster training, higher learning rates, reduces internal covariate shift, acts as regularization, less sensitive to initialization. Applied before/after activation functions.",
+            code: `import torch
+import torch.nn as nn
+import numpy as np
+
+# Batch Normalization implementation concept
+class BatchNorm1d:
+    def __init__(self, num_features, eps=1e-5, momentum=0.1):
+        self.num_features = num_features
+        self.eps = eps
+        self.momentum = momentum
+        
+        # Parameters to be learned
+        self.gamma = np.ones(num_features)  # Scale
+        self.beta = np.zeros(num_features)  # Shift
+        
+        # Running statistics
+        self.running_mean = np.zeros(num_features)
+        self.running_var = np.ones(num_features)
+        
+    def forward(self, x, training=True):
+        if training:
+            # Calculate batch statistics
+            batch_mean = np.mean(x, axis=0)
+            batch_var = np.var(x, axis=0)
+            
+            # Update running statistics
+            self.running_mean = (1 - self.momentum) * self.running_mean + self.momentum * batch_mean
+            self.running_var = (1 - self.momentum) * self.running_var + self.momentum * batch_var
+            
+            # Normalize
+            x_norm = (x - batch_mean) / np.sqrt(batch_var + self.eps)
+        else:
+            # Use running statistics during inference
+            x_norm = (x - self.running_mean) / np.sqrt(self.running_var + self.eps)
+        
+        # Scale and shift
+        out = self.gamma * x_norm + self.beta
+        return out
+
+# Using BatchNorm in PyTorch
+class ConvNet(nn.Module):
+    def __init__(self, num_classes=10):
+        super().__init__()
+        # Conv -> BatchNorm -> ReLU pattern
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=3, padding=1)
+        self.bn1 = nn.BatchNorm2d(64)
+        self.conv2 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
+        self.bn2 = nn.BatchNorm2d(128)
+        
+        self.fc1 = nn.Linear(128 * 7 * 7, 256)
+        self.bn3 = nn.BatchNorm1d(256)
+        self.fc2 = nn.Linear(256, num_classes)
+        
+        self.pool = nn.MaxPool2d(2, 2)
+        self.dropout = nn.Dropout(0.5)
+        
+    def forward(self, x):
+        # Conv block 1
+        x = self.pool(F.relu(self.bn1(self.conv1(x))))
+        
+        # Conv block 2
+        x = self.pool(F.relu(self.bn2(self.conv2(x))))
+        
+        # Flatten
+        x = x.view(x.size(0), -1)
+        
+        # FC layers
+        x = F.relu(self.bn3(self.fc1(x)))
+        x = self.dropout(x)
+        x = self.fc2(x)
+        
+        return x
+
+# Benefits demonstration
+# Without BatchNorm - slower convergence, need smaller learning rate
+model_no_bn = SimpleNet(use_bn=False)
+optimizer_no_bn = torch.optim.SGD(model_no_bn.parameters(), lr=0.01)
+
+# With BatchNorm - faster convergence, can use larger learning rate
+model_with_bn = SimpleNet(use_bn=True)
+optimizer_with_bn = torch.optim.SGD(model_with_bn.parameters(), lr=0.1)
+
+# Training comparison
+for epoch in range(epochs):
+    # Model with BN typically converges faster and achieves better performance
+    train_with_bn = train_epoch(model_with_bn, train_loader, optimizer_with_bn)
+    train_no_bn = train_epoch(model_no_bn, train_loader, optimizer_no_bn)`
+        },
+        
+        // General Python Questions
+        {
+            question: "Explain Python's GIL (Global Interpreter Lock) and its implications.",
+            answer: "GIL is a mutex that protects access to Python objects, preventing multiple threads from executing Python bytecode simultaneously. Implications: Limits true parallelism in CPU-bound multi-threaded programs. Solutions: Use multiprocessing, async/await for I/O, or C extensions that release GIL.",
+            code: `import threading
+import multiprocessing
+import time
+import asyncio
+
+# GIL limitation example - CPU-bound tasks
+def cpu_bound_task(n):
+    result = 0
+    for i in range(n):
+        result += i ** 2
+    return result
+
+# Threading (limited by GIL for CPU-bound tasks)
+def threading_example():
+    start = time.time()
+    threads = []
+    
+    for _ in range(4):
+        t = threading.Thread(target=cpu_bound_task, args=(10_000_000,))
+        t.start()
+        threads.append(t)
+    
+    for t in threads:
+        t.join()
+    
+    print(f"Threading time: {time.time() - start:.2f}s")
+    # Won't see significant speedup due to GIL
+
+# Multiprocessing (true parallelism)
+def multiprocessing_example():
+    start = time.time()
+    
+    with multiprocessing.Pool(4) as pool:
+        results = pool.map(cpu_bound_task, [10_000_000] * 4)
+    
+    print(f"Multiprocessing time: {time.time() - start:.2f}s")
+    # Significant speedup for CPU-bound tasks
+
+# I/O-bound tasks work well with threading
+def io_bound_task(url):
+    # Simulated I/O operation
+    time.sleep(1)  # GIL is released during I/O
+    return f"Downloaded {url}"
+
+# Async/await for concurrent I/O
+async def async_io_task(session, url):
+    async with session.get(url) as response:
+        return await response.text()
+
+async def async_main():
+    import aiohttp
+    urls = ['http://example.com'] * 10
+    
+    async with aiohttp.ClientSession() as session:
+        tasks = [async_io_task(session, url) for url in urls]
+        results = await asyncio.gather(*tasks)
+    
+    return results
+
+# Using C extensions that release GIL
+# NumPy operations release GIL
+import numpy as np
+
+def numpy_parallel():
+    # These operations can run in parallel
+    # because NumPy releases GIL during computation
+    arrays = [np.random.rand(1000, 1000) for _ in range(4)]
+    
+    threads = []
+    results = [None] * 4
+    
+    def matrix_multiply(idx, arr):
+        results[idx] = np.dot(arr, arr.T)
+    
+    for i, arr in enumerate(arrays):
+        t = threading.Thread(target=matrix_multiply, args=(i, arr))
+        t.start()
+        threads.append(t)
+    
+    for t in threads:
+        t.join()`
+        },
+        {
+            question: "What are Python decorators and how do they work?",
+            answer: "Decorators are functions that modify behavior of other functions/classes without changing their source code. They use @ syntax and implement the decorator pattern. Common uses: logging, timing, caching, authentication, validation. Work by wrapping the original function.",
+            code: `import time
+import functools
+from typing import Any, Callable
+
+# Basic decorator
+def timer_decorator(func):
+    @functools.wraps(func)  # Preserves function metadata
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(f"{func.__name__} took {end - start:.4f} seconds")
+        return result
+    return wrapper
+
+@timer_decorator
+def slow_function():
+    time.sleep(1)
+    return "Done"
+
+# Decorator with arguments
+def retry(max_attempts=3, delay=1):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    if attempt == max_attempts - 1:
+                        raise
+                    print(f"Attempt {attempt + 1} failed: {e}")
+                    time.sleep(delay)
+            return None
+        return wrapper
+    return decorator
+
+@retry(max_attempts=3, delay=2)
+def unreliable_api_call():
+    import random
+    if random.random() < 0.7:
+        raise ConnectionError("API failed")
+    return "Success"
+
+# Class decorator
+def singleton(cls):
+    instances = {}
+    def get_instance(*args, **kwargs):
+        if cls not in instances:
+            instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+    return get_instance
+
+@singleton
+class DatabaseConnection:
+    def __init__(self):
+        self.connection = "Connected to DB"
+
+# Property decorator
+class Temperature:
+    def __init__(self, celsius=0):
+        self._celsius = celsius
+    
+    @property
+    def celsius(self):
+        return self._celsius
+    
+    @celsius.setter
+    def celsius(self, value):
+        if value < -273.15:
+            raise ValueError("Temperature below absolute zero is not possible")
+        self._celsius = value
+    
+    @property
+    def fahrenheit(self):
+        return self._celsius * 9/5 + 32
+    
+    @fahrenheit.setter
+    def fahrenheit(self, value):
+        self.celsius = (value - 32) * 5/9
+
+# Memoization decorator
+def memoize(func):
+    cache = {}
+    
+    @functools.wraps(func)
+    def wrapper(*args):
+        if args in cache:
+            return cache[args]
+        result = func(*args)
+        cache[args] = result
+        return result
+    
+    wrapper.cache = cache  # Expose cache for inspection
+    return wrapper
+
+@memoize
+def fibonacci(n):
+    if n < 2:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+# Decorator classes
+class CountCalls:
+    def __init__(self, func):
+        self.func = func
+        self.count = 0
+    
+    def __call__(self, *args, **kwargs):
+        self.count += 1
+        print(f"Call {self.count} of {self.func.__name__}")
+        return self.func(*args, **kwargs)
+
+@CountCalls
+def say_hello():
+    print("Hello!")
+
+# Chaining decorators
+@timer_decorator
+@memoize
+def expensive_computation(n):
+    time.sleep(0.1)
+    return sum(i ** 2 for i in range(n))`
+        },
+        {
+            question: "Explain Python's memory management and garbage collection.",
+            answer: "Python uses reference counting as primary mechanism, with cyclic garbage collector for circular references. Memory organized in private heap, managed by Python memory manager. Objects deallocated when reference count reaches zero. Generational GC handles cycles using threshold-based collection.",
+            code: `import gc
+import sys
+import weakref
+
+# Reference counting
+def reference_counting_demo():
+    # Create object and check reference count
+    obj = [1, 2, 3]
+    print(f"Initial refs: {sys.getrefcount(obj) - 1}")  # -1 for getrefcount's reference
+    
+    # Create another reference
+    another_ref = obj
+    print(f"After assignment: {sys.getrefcount(obj) - 1}")
+    
+    # Create container reference
+    container = {'data': obj}
+    print(f"After container: {sys.getrefcount(obj) - 1}")
+    
+    # Delete references
+    del another_ref
+    print(f"After del: {sys.getrefcount(obj) - 1}")
+    
+    # Object destroyed when last reference removed
+    del container
+    del obj  # Object deallocated here
+
+# Circular references problem
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+        print(f"Node {value} created")
+    
+    def __del__(self):
+        print(f"Node {self.value} destroyed")
+
+def circular_reference_demo():
+    # Create circular reference
+    node1 = Node(1)
+    node2 = Node(2)
+    node1.next = node2
+    node2.next = node1  # Circular reference
+    
+    # Delete local references
+    del node1
+    del node2
+    
+    # Objects not immediately destroyed due to circular reference
+    print("Before garbage collection")
+    
+    # Force garbage collection
+    gc.collect()
+    print("After garbage collection")
+
+# Weak references
+def weak_reference_demo():
+    class ExpensiveObject:
+        def __init__(self, data):
+            self.data = data
+            print(f"ExpensiveObject created with {data}")
+        
+        def __del__(self):
+            print(f"ExpensiveObject with {self.data} destroyed")
+    
+    # Regular reference
+    obj = ExpensiveObject("important data")
+    strong_ref = obj
+    
+    # Weak reference doesn't prevent garbage collection
+    weak_ref = weakref.ref(obj)
+    
+    print(f"Object via weak ref: {weak_ref()}")
+    
+    # Delete strong references
+    del obj
+    del strong_ref
+    
+    # Object is garbage collected
+    print(f"Object via weak ref after deletion: {weak_ref()}")  # Returns None
+
+# Memory optimization techniques
+# 1. __slots__ to reduce memory usage
+class RegularClass:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+class SlottedClass:
+    __slots__ = ['x', 'y']  # Prevents __dict__ creation
+    
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+# Memory comparison
+regular = RegularClass(1, 2)
+slotted = SlottedClass(1, 2)
+print(f"Regular size: {sys.getsizeof(regular.__dict__)}")  # Has __dict__
+# print(f"Slotted size: {sys.getsizeof(slotted.__dict__)}")  # No __dict__, AttributeError
+
+# 2. Generator expressions for memory efficiency
+# List comprehension (stores all in memory)
+squares_list = [x**2 for x in range(1000000)]
+print(f"List size: {sys.getsizeof(squares_list)} bytes")
+
+# Generator expression (lazy evaluation)
+squares_gen = (x**2 for x in range(1000000))
+print(f"Generator size: {sys.getsizeof(squares_gen)} bytes")
+
+# 3. Context managers for resource management
+class FileManager:
+    def __init__(self, filename, mode):
+        self.filename = filename
+        self.mode = mode
+        self.file = None
+    
+    def __enter__(self):
+        self.file = open(self.filename, self.mode)
+        return self.file
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.file.close()
+        # Memory/resources freed automatically
+
+# Garbage collection control
+# Get current thresholds
+print(f"GC thresholds: {gc.get_threshold()}")
+
+# Disable automatic garbage collection (careful!)
+gc.disable()
+# ... performance critical code ...
+gc.enable()
+
+# Manual collection with generation specification
+gc.collect(0)  # Collect generation 0
+gc.collect(1)  # Collect generations 0 and 1
+gc.collect(2)  # Full collection
+
+# Memory profiling
+import tracemalloc
+
+tracemalloc.start()
+
+# Code to profile
+data = [i ** 2 for i in range(100000)]
+
+current, peak = tracemalloc.get_traced_memory()
+print(f"Current memory usage: {current / 1024 / 1024:.2f} MB")
+print(f"Peak memory usage: {peak / 1024 / 1024:.2f} MB")
+
+tracemalloc.stop()`
+        },
+        {
+            question: "What is the difference between deep copy and shallow copy in Python?",
+            answer: "Shallow copy creates new object but references to nested objects are shared. Deep copy creates new object and recursively copies all nested objects. Shallow: copy.copy() or [:]. Deep: copy.deepcopy(). Important for mutable nested structures.",
+            code: `import copy
+
+# Demonstrating shallow vs deep copy
+original_list = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+
+# Shallow copy
+shallow = copy.copy(original_list)
+# Also: shallow = original_list.copy() or shallow = original_list[:]
+
+# Deep copy
+deep = copy.deepcopy(original_list)
+
+# Modifying nested objects
+original_list[0][0] = 999
+
+print(f"Original: {original_list}")  # [[999, 2, 3], [4, 5, 6], [7, 8, 9]]
+print(f"Shallow: {shallow}")         # [[999, 2, 3], [4, 5, 6], [7, 8, 9]] - Changed!
+print(f"Deep: {deep}")              # [[1, 2, 3], [4, 5, 6], [7, 8, 9]] - Unchanged
+
+# Custom objects example
+class Person:
+    def __init__(self, name, friends=None):
+        self.name = name
+        self.friends = friends or []
+    
+    def add_friend(self, friend):
+        self.friends.append(friend)
+    
+    def __repr__(self):
+        return f"Person(name='{self.name}', friends={[f.name for f in self.friends]})"
+
+# Create relationships
+alice = Person("Alice")
+bob = Person("Bob")
+charlie = Person("Charlie", [alice, bob])
+
+# Shallow copy
+charlie_shallow = copy.copy(charlie)
+charlie_shallow.name = "Charlie Shallow"
+charlie_shallow.add_friend(Person("David"))
+
+print(f"Original Charlie: {charlie}")
+print(f"Shallow Charlie: {charlie_shallow}")
+# Friends list is shared!
+
+# Deep copy
+charlie_deep = copy.deepcopy(charlie)
+charlie_deep.name = "Charlie Deep"
+charlie_deep.friends[0].name = "Alice Modified"
+
+print(f"Original Charlie: {charlie}")
+print(f"Deep Charlie: {charlie_deep}")
+# Completely independent copy
+
+# Custom copy behavior
+class CustomObject:
+    def __init__(self, data, shared_resource):
+        self.data = data
+        self.shared_resource = shared_resource
+    
+    def __copy__(self):
+        # Custom shallow copy behavior
+        return CustomObject(
+            copy.copy(self.data),
+            self.shared_resource  # Share the resource
+        )
+    
+    def __deepcopy__(self, memo):
+        # Custom deep copy behavior
+        return CustomObject(
+            copy.deepcopy(self.data, memo),
+            self.shared_resource  # Still share this specific resource
+        )
+
+# Performance considerations
+import time
+
+large_nested_list = [[i] * 100 for i in range(1000)]
+
+# Shallow copy is faster
+start = time.time()
+shallow_result = copy.copy(large_nested_list)
+shallow_time = time.time() - start
+
+# Deep copy is slower but safer
+start = time.time()
+deep_result = copy.deepcopy(large_nested_list)
+deep_time = time.time() - start
+
+print(f"Shallow copy time: {shallow_time:.6f}s")
+print(f"Deep copy time: {deep_time:.6f}s")
+print(f"Deep copy is {deep_time/shallow_time:.2f}x slower")
+
+# Common pitfalls
+# 1. Mutable default arguments
+def add_item(item, list_=[]):  # DON'T DO THIS
+    list_.append(item)
+    return list_
+
+result1 = add_item(1)  # [1]
+result2 = add_item(2)  # [1, 2] - Unexpected!
+
+# Fix with None default
+def add_item_fixed(item, list_=None):
+    if list_ is None:
+        list_ = []
+    list_.append(item)
+    return list_
+
+# 2. Dictionary copy gotchas
+dict_original = {'a': [1, 2, 3], 'b': {'nested': 'value'}}
+dict_shallow = dict_original.copy()  # or dict(dict_original)
+
+dict_original['a'].append(4)
+dict_original['b']['nested'] = 'modified'
+
+print(f"Original dict: {dict_original}")
+print(f"Shallow dict: {dict_shallow}")  # Nested structures are shared!`
+        },
+        {
+            question: "Explain Python's context managers and the 'with' statement.",
+            answer: "Context managers ensure proper resource management using __enter__ and __exit__ methods. 'with' statement guarantees cleanup even if exceptions occur. Common uses: file handling, locks, database connections. Can create using contextlib decorators or classes.",
+            code: `import contextlib
+import sqlite3
+import threading
+import time
+from typing import Any
+
+# Basic context manager class
+class FileManager:
+    def __init__(self, filename, mode):
+        self.filename = filename
+        self.mode = mode
+        self.file = None
+    
+    def __enter__(self):
+        print(f"Opening file: {self.filename}")
+        self.file = open(self.filename, self.mode)
+        return self.file
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print(f"Closing file: {self.filename}")
+        if self.file:
+            self.file.close()
+        
+        # Handle exceptions if needed
+        if exc_type is not None:
+            print(f"Exception occurred: {exc_type.__name__}: {exc_val}")
+        
+        # Return False to propagate exception, True to suppress
+        return False
+
+# Using the context manager
+with FileManager('test.txt', 'w') as f:
+    f.write("Hello, World!")
+# File automatically closed
+
+# Context manager decorator
+@contextlib.contextmanager
+def timer_context(name):
+    print(f"Starting {name}")
+    start = time.time()
+    try:
+        yield start  # This is where the with block executes
+    finally:
+        end = time.time()
+        print(f"{name} took {end - start:.4f} seconds")
+
+with timer_context("Data processing") as start_time:
+    time.sleep(1)
+    print(f"Started at {start_time}")
+
+# Database connection manager
+class DatabaseConnection:
+    def __init__(self, db_name):
+        self.db_name = db_name
+        self.conn = None
+        self.cursor = None
+    
+    def __enter__(self):
+        self.conn = sqlite3.connect(self.db_name)
+        self.cursor = self.conn.cursor()
+        return self.cursor
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is None:
+            self.conn.commit()
+        else:
+            self.conn.rollback()
+        
+        self.cursor.close()
+        self.conn.close()
+
+# Thread lock context manager
+lock = threading.Lock()
+
+@contextlib.contextmanager
+def acquire_lock(lock, timeout=None):
+    acquired = lock.acquire(timeout=timeout)
+    try:
+        if acquired:
+            yield lock
+        else:
+            raise TimeoutError("Could not acquire lock")
+    finally:
+        if acquired:
+            lock.release()
+
+# Multiple context managers
+with acquire_lock(lock), timer_context("Critical section"):
+    # Thread-safe operation
+    print("Doing thread-safe work")
+
+# Nested context managers
+with open('input.txt', 'r') as infile, \
+     open('output.txt', 'w') as outfile:
+    data = infile.read()
+    outfile.write(data.upper())
+
+# Custom cleanup with suppress
+from contextlib import suppress
+
+# Ignore specific exceptions
+with suppress(FileNotFoundError, PermissionError):
+    os.remove('possibly_missing_file.txt')
+# No exception raised even if file doesn't exist
+
+# Reentrant context manager
+@contextlib.contextmanager
+def reentrant_lock():
+    print("Acquiring lock")
+    yield
+    print("Releasing lock")
+
+# ExitStack for dynamic context management
+def process_files(filenames):
+    with contextlib.ExitStack() as stack:
+        files = [
+            stack.enter_context(open(fname))
+            for fname in filenames
+        ]
+        # All files will be properly closed
+        return [f.read() for f in files]
+
+# Async context managers
+import asyncio
+
+class AsyncResource:
+    async def __aenter__(self):
+        print("Acquiring async resource")
+        await asyncio.sleep(0.1)
+        return self
+    
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        print("Releasing async resource")
+        await asyncio.sleep(0.1)
+
+async def use_async_resource():
+    async with AsyncResource() as resource:
+        print("Using async resource")
+        await asyncio.sleep(0.5)
+
+# Practical example: Temporary directory
+import tempfile
+import shutil
+
+@contextlib.contextmanager
+def temporary_directory():
+    temp_dir = tempfile.mkdtemp()
+    try:
+        yield temp_dir
+    finally:
+        shutil.rmtree(temp_dir)
+
+with temporary_directory() as temp_dir:
+    # Work with temporary directory
+    temp_file = os.path.join(temp_dir, 'temp.txt')
+    with open(temp_file, 'w') as f:
+        f.write("Temporary data")
+# Directory and all contents automatically deleted
+
+# Context manager for changing working directory
+@contextlib.contextmanager
+def change_dir(destination):
+    current = os.getcwd()
+    try:
+        os.chdir(destination)
+        yield
+    finally:
+        os.chdir(current)
+
+with change_dir('/tmp'):
+    print(f"Now in: {os.getcwd()}")
+# Back to original directory`
+        },
+        {
+            question: "What are metaclasses in Python and when would you use them?",
+            answer: "Metaclasses are classes whose instances are classes. They control class creation process. Default metaclass is 'type'. Use cases: ORMs, singleton patterns, class validation, API frameworks. Generally avoided unless building frameworks. 'Metaclasses are deeper magic than 99% of users should ever worry about.'",
+            code: `# Understanding metaclasses
+# Classes are instances of metaclasses
+class SimpleClass:
+    pass
+
+print(type(SimpleClass))  # <class 'type'>
+print(type(type))        # <class 'type'> - type is its own metaclass
+
+# Creating a class dynamically with type
+def init(self, name):
+    self.name = name
+
+def greet(self):
+    return f"Hello, I'm {self.name}"
+
+# type(name, bases, dict)
+DynamicClass = type('DynamicClass', (), {
+    '__init__': init,
+    'greet': greet,
+    'class_var': 42
+})
+
+obj = DynamicClass("Dynamic")
+print(obj.greet())  # Hello, I'm Dynamic
+
+# Custom metaclass
+class SingletonMeta(type):
+    _instances = {}
+    
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super().__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class Singleton(metaclass=SingletonMeta):
+    def __init__(self, value):
+        self.value = value
+
+# Test singleton
+s1 = Singleton(1)
+s2 = Singleton(2)
+print(s1 is s2)  # True - same instance
+print(s1.value)  # 1 - initialized only once
+
+# Metaclass for validation
+class ValidatedMeta(type):
+    def __new__(mcs, name, bases, namespace):
+        # Validate class definition
+        if 'required_method' not in namespace:
+            raise TypeError(f"{name} must implement required_method")
+        
+        # Ensure all methods have docstrings
+        for attr_name, attr_value in namespace.items():
+            if callable(attr_value) and not attr_name.startswith('_'):
+                if not attr_value.__doc__:
+                    raise ValueError(f"{name}.{attr_name} must have a docstring")
+        
+        return super().__new__(mcs, name, bases, namespace)
+
+class ValidatedClass(metaclass=ValidatedMeta):
+    def required_method(self):
+        """This method is required."""
+        pass
+
+# ORM-style metaclass example
+class ModelMeta(type):
+    def __new__(mcs, name, bases, namespace):
+        if name == 'Model':
+            return super().__new__(mcs, name, bases, namespace)
+        
+        # Collect field definitions
+        fields = {}
+        for key, value in namespace.items():
+            if isinstance(value, Field):
+                fields[key] = value
+                value.name = key
+        
+        namespace['_fields'] = fields
+        return super().__new__(mcs, name, bases, namespace)
+
+class Field:
+    def __init__(self, field_type, default=None):
+        self.field_type = field_type
+        self.default = default
+        self.name = None
+    
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        return instance.__dict__.get(self.name, self.default)
+    
+    def __set__(self, instance, value):
+        if not isinstance(value, self.field_type):
+            raise TypeError(f"{self.name} must be {self.field_type}")
+        instance.__dict__[self.name] = value
+
+class Model(metaclass=ModelMeta):
+    def __init__(self, **kwargs):
+        for name, field in self._fields.items():
+            value = kwargs.get(name, field.default)
+            setattr(self, name, value)
+    
+    def to_dict(self):
+        return {name: getattr(self, name) for name in self._fields}
+
+# Using the ORM-style model
+class User(Model):
+    name = Field(str)
+    age = Field(int, default=0)
+    email = Field(str)
+
+user = User(name="Alice", email="alice@example.com")
+print(user.to_dict())  # {'name': 'Alice', 'age': 0, 'email': 'alice@example.com'}
+
+# Abstract base class with metaclass
+from abc import ABCMeta, abstractmethod
+
+class PluginMeta(ABCMeta):
+    # Registry of all plugins
+    plugins = {}
+    
+    def __new__(mcs, name, bases, namespace):
+        cls = super().__new__(mcs, name, bases, namespace)
+        
+        # Register non-abstract classes
+        if not hasattr(cls, '__abstractmethods__') or not cls.__abstractmethods__:
+            mcs.plugins[name] = cls
+        
+        return cls
+
+class Plugin(metaclass=PluginMeta):
+    @abstractmethod
+    def execute(self):
+        pass
+
+class ConcretePlugin(Plugin):
+    def execute(self):
+        print("Executing concrete plugin")
+
+print(PluginMeta.plugins)  # {'ConcretePlugin': <class 'ConcretePlugin'>}
+
+# __prepare__ method for ordered namespaces
+class OrderedMeta(type):
+    @classmethod
+    def __prepare__(mcs, name, bases):
+        # Return OrderedDict to preserve attribute order
+        from collections import OrderedDict
+        return OrderedDict()
+    
+    def __new__(mcs, name, bases, namespace):
+        cls = super().__new__(mcs, name, bases, namespace)
+        cls._order = list(namespace.keys())
+        return cls
+
+class OrderedClass(metaclass=OrderedMeta):
+    first = 1
+    second = 2
+    third = 3
+
+print(OrderedClass._order)  # Preserves definition order`
+        },
+        {
+            question: "Explain Python's async/await and how it differs from threading.",
+            answer: "Async/await enables cooperative multitasking for I/O-bound operations using single thread. Threading uses OS threads for preemptive multitasking. Async is more efficient for I/O, avoids GIL issues, but requires async-aware libraries. Threading better for CPU-bound tasks with C extensions.",
+            code: `import asyncio
+import aiohttp
+import threading
+import time
+import concurrent.futures
+
+# Basic async/await example
+async def fetch_data(url):
+    print(f"Fetching {url}")
+    await asyncio.sleep(1)  # Simulated I/O
+    return f"Data from {url}"
+
+async def main():
+    # Concurrent execution
+    urls = ['http://api1.com', 'http://api2.com', 'http://api3.com']
+    
+    # Method 1: gather
+    results = await asyncio.gather(
+        fetch_data(urls[0]),
+        fetch_data(urls[1]),
+        fetch_data(urls[2])
+    )
+    print(f"Results: {results}")
+    
+    # Method 2: create_task
+    tasks = [asyncio.create_task(fetch_data(url)) for url in urls]
+    results = await asyncio.gather(*tasks)
+    
+    # Method 3: as_completed
+    tasks = [asyncio.create_task(fetch_data(url)) for url in urls]
+    for coro in asyncio.as_completed(tasks):
+        result = await coro
+        print(f"Completed: {result}")
+
+# Run async code
+asyncio.run(main())
+
+# Async context manager
+class AsyncDatabase:
+    async def __aenter__(self):
+        print("Connecting to database...")
+        await asyncio.sleep(0.5)
+        self.connection = "Connected"
+        return self
+    
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        print("Closing database connection...")
+        await asyncio.sleep(0.5)
+    
+    async def query(self, sql):
+        await asyncio.sleep(0.1)
+        return f"Results for: {sql}"
+
+async def use_database():
+    async with AsyncDatabase() as db:
+        result = await db.query("SELECT * FROM users")
+        print(result)
+
+# Async generator
+async def async_range(start, stop):
+    for i in range(start, stop):
+        await asyncio.sleep(0.1)
+        yield i
+
+async def use_async_generator():
+    async for num in async_range(0, 5):
+        print(f"Got: {num}")
+
+# Comparison: Async vs Threading
+# Async I/O-bound task
+async def async_io_task(n):
+    start = time.time()
+    tasks = []
+    
+    async def io_operation(i):
+        await asyncio.sleep(1)  # Simulated I/O
+        return i ** 2
+    
+    for i in range(n):
+        tasks.append(asyncio.create_task(io_operation(i)))
+    
+    results = await asyncio.gather(*tasks)
+    print(f"Async took: {time.time() - start:.2f}s")
+    return results
+
+# Threading I/O-bound task
+def threading_io_task(n):
+    start = time.time()
+    results = []
+    threads = []
+    
+    def io_operation(i):
+        time.sleep(1)  # Simulated I/O
+        results.append(i ** 2)
+    
+    for i in range(n):
+        t = threading.Thread(target=io_operation, args=(i,))
+        t.start()
+        threads.append(t)
+    
+    for t in threads:
+        t.join()
+    
+    print(f"Threading took: {time.time() - start:.2f}s")
+    return results
+
+# Real-world async example with aiohttp
+async def fetch_multiple_urls():
+    urls = [
+        'https://httpbin.org/delay/1',
+        'https://httpbin.org/delay/2',
+        'https://httpbin.org/delay/3'
+    ]
+    
+    async with aiohttp.ClientSession() as session:
+        async def fetch(url):
+            async with session.get(url) as response:
+                return await response.json()
+        
+        # Fetch all URLs concurrently
+        results = await asyncio.gather(*[fetch(url) for url in urls])
+        return results
+
+# Async queue for producer-consumer pattern
+async def producer_consumer():
+    queue = asyncio.Queue(maxsize=10)
+    
+    async def producer():
+        for i in range(20):
+            await asyncio.sleep(0.1)
+            await queue.put(f"item_{i}")
+            print(f"Produced item_{i}")
+        await queue.put(None)  # Signal completion
+    
+    async def consumer(name):
+        while True:
+            item = await queue.get()
+            if item is None:
+                # Put it back for other consumers
+                await queue.put(None)
+                break
+            print(f"{name} consumed {item}")
+            await asyncio.sleep(0.3)
+    
+    # Run producer and multiple consumers
+    await asyncio.gather(
+        producer(),
+        consumer("Consumer1"),
+        consumer("Consumer2")
+    )
+
+# Error handling in async code
+async def error_handling_example():
+    async def may_fail():
+        import random
+        if random.random() > 0.5:
+            raise ValueError("Random failure")
+        return "Success"
+    
+    # Method 1: try/except
+    try:
+        result = await may_fail()
+    except ValueError as e:
+        print(f"Caught: {e}")
+    
+    # Method 2: gather with return_exceptions
+    results = await asyncio.gather(
+        may_fail(),
+        may_fail(),
+        may_fail(),
+        return_exceptions=True
+    )
+    
+    for result in results:
+        if isinstance(result, Exception):
+            print(f"Error: {result}")
+        else:
+            print(f"Success: {result}")
+
+# Async timeout
+async def with_timeout():
+    try:
+        async with asyncio.timeout(2.0):
+            await asyncio.sleep(3.0)  # This will timeout
+    except TimeoutError:
+        print("Operation timed out")
+
+# Converting sync to async
+def sync_function(x):
+    time.sleep(1)
+    return x ** 2
+
+async def make_async():
+    loop = asyncio.get_event_loop()
+    
+    # Run in thread pool
+    with concurrent.futures.ThreadPoolExecutor() as pool:
+        result = await loop.run_in_executor(pool, sync_function, 5)
+        print(f"Result: {result}")`
+        },
+        {
+            question: "What are Python's magic methods (dunder methods) and their uses?",
+            answer: "Magic methods are special methods with double underscores that define object behavior for built-in operations. Examples: __init__ (constructor), __str__ (string representation), __eq__ (equality), __len__ (length), __getitem__ (indexing). Enable Pythonic interfaces and operator overloading.",
+            code: `class Vector:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    
+    # String representations
+    def __str__(self):
+        return f"Vector({self.x}, {self.y})"
+    
+    def __repr__(self):
+        return f"Vector(x={self.x}, y={self.y})"
+    
+    # Arithmetic operations
+    def __add__(self, other):
+        if isinstance(other, Vector):
+            return Vector(self.x + other.x, self.y + other.y)
+        return NotImplemented
+    
+    def __sub__(self, other):
+        if isinstance(other, Vector):
+            return Vector(self.x - other.x, self.y - other.y)
+        return NotImplemented
+    
+    def __mul__(self, scalar):
+        return Vector(self.x * scalar, self.y * scalar)
+    
+    def __rmul__(self, scalar):
+        return self.__mul__(scalar)
+    
+    def __truediv__(self, scalar):
+        return Vector(self.x / scalar, self.y / scalar)
+    
+    # Comparison operations
+    def __eq__(self, other):
+        if isinstance(other, Vector):
+            return self.x == other.x and self.y == other.y
+        return False
+    
+    def __lt__(self, other):
+        return self.magnitude() < other.magnitude()
+    
+    def __le__(self, other):
+        return self.magnitude() <= other.magnitude()
+    
+    # Unary operations
+    def __neg__(self):
+        return Vector(-self.x, -self.y)
+    
+    def __abs__(self):
+        return (self.x ** 2 + self.y ** 2) ** 0.5
+    
+    def magnitude(self):
+        return abs(self)
+    
+    # Container behavior
+    def __len__(self):
+        return 2
+    
+    def __getitem__(self, index):
+        if index == 0:
+            return self.x
+        elif index == 1:
+            return self.y
+        raise IndexError("Vector index out of range")
+    
+    def __setitem__(self, index, value):
+        if index == 0:
+            self.x = value
+        elif index == 1:
+            self.y = value
+        else:
+            raise IndexError("Vector index out of range")
+    
+    # Iterator protocol
+    def __iter__(self):
+        return iter([self.x, self.y])
+    
+    # Context manager protocol
+    def __enter__(self):
+        print(f"Entering vector context: {self}")
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print(f"Exiting vector context: {self}")
+        return False
+    
+    # Callable behavior
+    def __call__(self, scale=1):
+        return Vector(self.x * scale, self.y * scale)
+    
+    # Attribute access
+    def __getattr__(self, name):
+        if name == 'magnitude':
+            return abs(self)
+        raise AttributeError(f"Vector has no attribute '{name}'")
+    
+    # Boolean conversion
+    def __bool__(self):
+        return self.x != 0 or self.y != 0
+    
+    # Hash for use in sets/dicts
+    def __hash__(self):
+        return hash((self.x, self.y))
+
+# Usage examples
+v1 = Vector(3, 4)
+v2 = Vector(1, 2)
+
+print(str(v1))          # Vector(3, 4)
+print(repr(v1))         # Vector(x=3, y=4)
+print(v1 + v2)          # Vector(4, 6)
+print(v1 * 2)           # Vector(6, 8)
+print(2 * v1)           # Vector(6, 8) - using __rmul__
+print(abs(v1))          # 5.0
+print(v1[0])            # 3
+print(list(v1))         # [3, 4]
+
+# Advanced magic methods
+class Database:
+    def __init__(self):
+        self.data = {}
+        self.closed = False
+    
+    # Context manager for automatic cleanup
+    def __enter__(self):
+        print("Opening database connection")
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print("Closing database connection")
+        self.close()
+    
+    # Destructor
+    def __del__(self):
+        if not self.closed:
+            print("Warning: Database not properly closed")
+            self.close()
+    
+    # Make it act like a dictionary
+    def __getitem__(self, key):
+        return self.data[key]
+    
+    def __setitem__(self, key, value):
+        self.data[key] = value
+    
+    def __delitem__(self, key):
+        del self.data[key]
+    
+    def __contains__(self, key):
+        return key in self.data
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def close(self):
+        self.closed = True
+
+# Descriptor protocol
+class Validator:
+    def __init__(self, min_value=None, max_value=None):
+        self.min_value = min_value
+        self.max_value = max_value
+    
+    def __set_name__(self, owner, name):
+        self.name = name
+    
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        return instance.__dict__.get(self.name)
+    
+    def __set__(self, instance, value):
+        if self.min_value is not None and value < self.min_value:
+            raise ValueError(f"{self.name} must be >= {self.min_value}")
+        if self.max_value is not None and value > self.max_value:
+            raise ValueError(f"{self.name} must be <= {self.max_value}")
+        instance.__dict__[self.name] = value
+    
+    def __delete__(self, instance):
+        del instance.__dict__[self.name]
+
+class Person:
+    age = Validator(min_value=0, max_value=150)
+    
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age  # Uses validator
+
+# Metaclass magic methods
+class MetaClass(type):
+    # Called when class is created
+    def __new__(mcs, name, bases, namespace):
+        print(f"Creating class {name}")
+        return super().__new__(mcs, name, bases, namespace)
+    
+    # Called when class is instantiated
+    def __call__(cls, *args, **kwargs):
+        print(f"Creating instance of {cls.__name__}")
+        return super().__call__(*args, **kwargs)
+
+# Number-like class with all numeric operations
+class Complex:
+    def __init__(self, real, imag):
+        self.real = real
+        self.imag = imag
+    
+    # All numeric operations
+    def __add__(self, other):
+        if isinstance(other, (int, float)):
+            return Complex(self.real + other, self.imag)
+        return Complex(self.real + other.real, self.imag + other.imag)
+    
+    def __radd__(self, other):
+        return self.__add__(other)
+    
+    def __iadd__(self, other):
+        if isinstance(other, (int, float)):
+            self.real += other
+        else:
+            self.real += other.real
+            self.imag += other.imag
+        return self
+    
+    # Format specification
+    def __format__(self, format_spec):
+        if format_spec == 'r':
+            return f"{self.real:.2f}"
+        elif format_spec == 'i':
+            return f"{self.imag:.2f}"
+        return f"{self.real:.2f} + {self.imag:.2f}i"`
+        },
+        {
+            question: "How do Python generators work and what are their advantages?",
+            answer: "Generators are iterators that yield values lazily using 'yield' keyword. They maintain state between calls, use minimal memory, and enable processing of large/infinite sequences. Created with generator functions or expressions. Advantages: memory efficiency, cleaner code, composability.",
+            code: `# Basic generator function
+def fibonacci_generator(n):
+    a, b = 0, 1
+    count = 0
+    while count < n:
+        yield a  # Pause and return value
+        a, b = b, a + b
+        count += 1
+
+# Using the generator
+fib = fibonacci_generator(10)
+print(next(fib))  # 0
+print(next(fib))  # 1
+print(list(fib))  # [1, 2, 3, 5, 8, 13, 21, 34] - remaining values
+
+# Generator expression
+squares = (x**2 for x in range(10))
+print(type(squares))  # <class 'generator'>
+
+# Memory efficiency comparison
+import sys
+
+# List comprehension - stores all values
+list_comp = [x**2 for x in range(1000000)]
+print(f"List size: {sys.getsizeof(list_comp)} bytes")
+
+# Generator expression - lazy evaluation
+gen_exp = (x**2 for x in range(1000000))
+print(f"Generator size: {sys.getsizeof(gen_exp)} bytes")
+
+# Infinite sequences
+def infinite_sequence():
+    num = 0
+    while True:
+        yield num
+        num += 1
+
+# Use with care!
+counter = infinite_sequence()
+limited = itertools.islice(counter, 10)
+print(list(limited))  # [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+# Generator with state
+def running_average():
+    total = 0
+    count = 0
+    average = None
+    while True:
+        value = yield average
+        if value is not None:
+            total += value
+            count += 1
+            average = total / count
+
+# Using send() method
+avg = running_average()
+next(avg)  # Prime the generator
+print(avg.send(10))   # 10.0
+print(avg.send(20))   # 15.0
+print(avg.send(30))   # 20.0
+
+# File processing with generators
+def read_large_file(file_path):
+    with open(file_path, 'r') as file:
+        for line in file:
+            yield line.strip()
+
+def process_data(lines):
+    for line in lines:
+        if line and not line.startswith('#'):
+            yield line.upper()
+
+# Chain generators for pipeline
+# lines = read_large_file('huge_file.txt')
+# processed = process_data(lines)
+# for result in processed:
+#     print(result)
+
+# Generator delegation with yield from
+def flatten(nested_list):
+    for item in nested_list:
+        if isinstance(item, list):
+            yield from flatten(item)  # Delegate to sub-generator
+        else:
+            yield item
+
+nested = [1, [2, 3, [4, 5]], 6, [7, [8, 9]]]
+print(list(flatten(nested)))  # [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+# Context manager generator
+from contextlib import contextmanager
+import time
+
+@contextmanager
+def timer():
+    start = time.time()
+    try:
+        yield
+    finally:
+        end = time.time()
+        print(f"Elapsed time: {end - start:.4f} seconds")
+
+with timer():
+    time.sleep(1)
+
+# Advanced generator patterns
+def window_slider(iterable, window_size):
+    iterator = iter(iterable)
+    window = []
+    
+    # Fill initial window
+    for _ in range(window_size):
+        try:
+            window.append(next(iterator))
+        except StopIteration:
+            return
+    
+    yield tuple(window)
+    
+    # Slide window
+    for item in iterator:
+        window = window[1:] + [item]
+        yield tuple(window)
+
+data = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+for window in window_slider(data, 3):
+    print(window)  # (1, 2, 3), (2, 3, 4), ..., (7, 8, 9)
+
+# Generator error handling
+def safe_divide_generator(numbers, divisor):
+    for num in numbers:
+        try:
+            yield num / divisor
+        except ZeroDivisionError:
+            yield float('inf')
+        except Exception as e:
+            yield f"Error: {e}"
+
+# Using throw() and close()
+def interactive_generator():
+    try:
+        value = 0
+        while True:
+            value = yield value
+            print(f"Received: {value}")
+    except GeneratorExit:
+        print("Generator closing")
+    except Exception as e:
+        print(f"Exception received: {e}")
+
+gen = interactive_generator()
+next(gen)  # Prime
+gen.send(10)
+gen.throw(ValueError, "Custom error")  # Send exception
+gen.close()  # Clean shutdown
+
+# Performance comparison
+def compute_squares_list(n):
+    return [x**2 for x in range(n)]
+
+def compute_squares_generator(n):
+    return (x**2 for x in range(n))
+
+# Memory and time efficiency
+import timeit
+
+# List stores all values immediately
+list_time = timeit.timeit(
+    'sum(compute_squares_list(1000000))',
+    globals=globals(),
+    number=10
+)
+
+# Generator computes on demand
+gen_time = timeit.timeit(
+    'sum(compute_squares_generator(1000000))',
+    globals=globals(),
+    number=10
+)
+
+print(f"List time: {list_time:.4f}s")
+print(f"Generator time: {gen_time:.4f}s")`
+        }
     ]
 };
 
