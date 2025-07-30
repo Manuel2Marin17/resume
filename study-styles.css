@@ -166,6 +166,8 @@
     height: 100%;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
     background: var(--card-bg);
     border-radius: 20px;
     padding: 2rem;
@@ -1066,6 +1068,19 @@
     .flashcard-back {
         transition: opacity 0.6s;
     }
+}
+
+/* Fix for flashcard visibility */
+.flashcard-front {
+    transform: rotateY(0deg);
+}
+
+.flashcard.flipped .flashcard-front {
+    visibility: hidden;
+}
+
+.flashcard.flipped .flashcard-back {
+    visibility: visible;
 }
 
 /* Code Examples in Flashcards */
